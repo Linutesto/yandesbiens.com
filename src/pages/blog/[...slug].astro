@@ -1,6 +1,9 @@
 ---
 import Base from '../../layouts/Base.astro';
+import Subscribe from '../../components/Subscribe.astro';
 import { getCollection, render } from 'astro:content';
+import { tracks } from '../../data/tracks';
+import { SITE } from '../../data/site';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
@@ -12,13 +15,41 @@ export async function getStaticPaths() {
 
 const { post } = Astro.props;
 const { Content } = await render(post);
+const track = post.data.track ? tracks[post.data.track] : null;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: post.data.title,
+  description: post.data.description,
+  datePublished: post.data.date.toISOString(),
+  author: { '@type': 'Person', name: SITE.name },
+  publisher: { '@type': 'Organization', name: SITE.org },
+  mainEntityOfPage: new URL(`/blog/${post.id}/`, SITE.url).href,
+  ...(post.data.ogImage ? { image: new URL(post.data.ogImage, SITE.url).href } : {}),
+  keywords: post.data.tags.join(', '),
+};
 ---
-<Base title={`${post.data.title} — yan desbiens`} description={post.data.description}>
+<Base
+  title={`${post.data.title} — yan desbiens`}
+  description={post.data.description}
+  type="article"
+  publishDate={post.data.date}
+  tags={post.data.tags}
+  ogImage={post.data.ogImage}
+  jsonLd={jsonLd}
+>
   <p class="prompt">
     <b>yan@yandesbiens</b>:<span class="path">~/blog</span>$ <span class="cmd">cat {post.id}.md</span>
   </p>
 
   <article class="post">
+    {(post.data.proofDrop || track) && (
+      <p class="kicker">
+        {post.data.proofDrop && <span class="pd">proof drop</span>}
+        {track && <a class="track" href={`/research#${track.id}`} style={`color:${track.accent}`}>{track.label}</a>}
+      </p>
+    )}
     <h1>{post.data.title}</h1>
     <p class="meta">
       <span class="date">{post.data.date.toISOString().slice(0, 10)}</span>
@@ -29,18 +60,39 @@ const { Content } = await render(post);
     </div>
   </article>
 
+  <Subscribe variant="page" src={`blog-${post.id}`}
+    heading="Get the next proof drop."
+    blurb="Reproducible local-first AI research, in your inbox. No hype." />
+
   <p class="more"><a href="/blog">← back to all posts</a></p>
 </Base>
 
 <style>
   .post { max-width: 72ch; }
-  .post h1 { color: var(--green); font-size: 26px; margin: 14px 0 6px; text-shadow: var(--glow-green); }
-  .meta { display: flex; gap: 12px; align-items: center; margin: 0 0 26px; font-size: 13px; }
+  .kicker { display: flex; gap: 10px; align-items: center; margin: 8px 0 0; font-size: 12px; }
+  .kicker .pd {
+    color: #1a0014; background: var(--pink); border-radius: 999px; padding: 2px 9px;
+    font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .kicker .track { text-decoration: none; }
+  .post h1 { color: var(--green); font-size: 26px; margin: 10px 0 6px; text-shadow: var(--glow-green); }
+  .meta { display: flex; gap: 12px; align-items: center; margin: 0 0 26px; font-size: 13px; flex-wrap: wrap; }
   .meta .date { color: var(--green-dim); }
   .meta .tag { color: var(--pink); }
   .body :global(h2) { color: var(--pink); margin-top: 32px; }
   .body :global(h3) { color: var(--green); }
   .body :global(a) { text-decoration: underline; }
+  .body :global(img) {
+    max-width: 100%; height: auto; border: 1px solid var(--border);
+    border-radius: 8px; margin: 18px 0; background: var(--bg-soft);
+  }
+  .body :global(table) {
+    width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 13.5px;
+  }
+  .body :global(th), .body :global(td) {
+    border: 1px solid var(--border); padding: 7px 10px; text-align: left;
+  }
+  .body :global(th) { color: var(--green); background: #ffffff06; }
   .body :global(code) {
     background: #ffffff0c; border: 1px solid var(--border);
     border-radius: 4px; padding: 1px 5px; font-size: 13px; color: var(--amber);

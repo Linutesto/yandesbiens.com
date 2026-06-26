@@ -1,0 +1,52 @@
+---
+import Base from '../../layouts/Base.astro';
+import Subscribe from '../../components/Subscribe.astro';
+import { getCollection, render } from 'astro:content';
+import { tracks } from '../../data/tracks';
+
+export async function getStaticPaths() {
+  const issues = await getCollection('newsletter');
+  return issues.map((issue) => ({ params: { slug: issue.id }, props: { issue } }));
+}
+
+const { issue } = Astro.props;
+const { Content } = await render(issue);
+const track = issue.data.track ? tracks[issue.data.track] : null;
+---
+<Base
+  title={`#${issue.data.issue} ${issue.data.title} — Éthiqueia newsletter`}
+  description={issue.data.description}
+  type="article"
+  publishDate={issue.data.date}
+  tags={issue.data.tags}
+>
+  <p class="prompt">
+    <b>yan@yandesbiens</b>:<span class="path">~/newsletter</span>$ <span class="cmd">cat {issue.id}.md</span>
+  </p>
+
+  <article class="post">
+    <p class="kicker">
+      <span class="num">issue #{issue.data.issue}</span>
+      {track && <span class="track" style={`color:${track.accent}`}>· {track.label}</span>}
+    </p>
+    <h1>{issue.data.title}</h1>
+    <p class="meta"><span class="date">{issue.data.date.toISOString().slice(0, 10)}</span></p>
+    <div class="body"><Content /></div>
+  </article>
+
+  <Subscribe variant="page" src={`newsletter-issue-${issue.data.issue}`} />
+  <p class="more"><a href="/newsletter">← all issues</a></p>
+</Base>
+
+<style>
+  .post { max-width: 72ch; }
+  .kicker { font-size: 13px; margin: 6px 0 0; }
+  .kicker .num { color: var(--pink); font-weight: 700; }
+  .post h1 { color: var(--green); font-size: 26px; margin: 6px 0; text-shadow: var(--glow-green); }
+  .meta { font-size: 13px; margin: 0 0 26px; }
+  .meta .date { color: var(--green-dim); }
+  .body :global(h2) { color: var(--pink); margin-top: 30px; }
+  .body :global(a) { text-decoration: underline; }
+  .body :global(ul) { padding-left: 18px; }
+  .more { margin-top: 32px; }
+</style>

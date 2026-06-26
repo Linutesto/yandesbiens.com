@@ -4,6 +4,7 @@ import Hero from '../components/Hero.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import Chat from '../components/Chat.tsx';
 import Contact from '../components/Contact.astro';
+import Subscribe from '../components/Subscribe.astro';
 import { projects } from '../data/projects';
 import { getCollection } from 'astro:content';
 
@@ -124,6 +125,11 @@ const posts = (await getCollection('blog'))
     </ul>
   )}
   <p class="more"><a href="/blog">→ all posts</a></p>
+
+  <!-- NEWSLETTER -->
+  <Subscribe variant="inline" src="home"
+    heading="Get every proof drop."
+    blurb="Reproducible local-first AI research from a one-GPU lab. No hype. Benchmarks, architectures, and field notes — straight to your inbox." />
 
   <!-- CONTACT -->
   <p class="prompt" id="contact">

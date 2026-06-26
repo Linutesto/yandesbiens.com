@@ -1,0 +1,96 @@
+---
+import Base from '../layouts/Base.astro';
+import Subscribe from '../components/Subscribe.astro';
+
+// Lead magnets. v1 is ungated (download links work directly); the email capture
+// below is the soft ask. Gating can be layered on later via the /api/subscribe flow.
+type Res = {
+  title: string; blurb: string; href?: string; status: 'ready' | 'draft';
+};
+const resources: Res[] = [
+  {
+    title: 'UFM benchmark report',
+    blurb: 'Full method, numbers, figures, and honest limitations for proof drop #1 — running a 24 GB model on a 24 GB GPU.',
+    href: '/downloads/ufm-benchmark-report.md', status: 'ready',
+  },
+  {
+    title: 'Research program (full map)',
+    blurb: 'The canonical map of the lab: thesis, five threads, lineage, maturity, and the next proof needed for each.',
+    href: '/downloads/ethiqueia-research-program.md', status: 'ready',
+  },
+  {
+    title: 'Architecture diagrams',
+    blurb: 'Memory paging (UFM), self-organizing memory (FMM), and the program knowledge graph. Coming with the next drops.',
+    status: 'draft',
+  },
+  {
+    title: 'YSON / QJSON spec',
+    blurb: 'The inspectable, file-based agent persona/state format. Spec writeup is the next Agent Runtime proof.',
+    status: 'draft',
+  },
+  {
+    title: 'Hermes / NeuroArch overview',
+    blurb: 'How a competent agent gets background cognition cycles — idle reasoning, belief revision, crystallization.',
+    status: 'draft',
+  },
+];
+---
+<Base
+  title="resources — Yan Desbiens · Éthiqueia"
+  description="Downloadable reports, specs, and diagrams from the Éthiqueia research program — reproducible local-first AI."
+>
+  <p class="prompt">
+    <b>yan@yandesbiens</b>:<span class="path">~</span>$ <span class="cmd">ls ~/resources/</span>
+  </p>
+
+  <header class="rhead">
+    <h1>Resources</h1>
+    <p class="sub">
+      Reports, specs, and diagrams from the lab. Free to read and share. The deeper drops land
+      in the <a href="/newsletter">newsletter</a> first.
+    </p>
+  </header>
+
+  <ul class="reslist">
+    {resources.map((r) => (
+      <li class:list={['res', r.status]}>
+        <div class="res-main">
+          <span class="res-title">{r.title}</span>
+          <span class="res-blurb">{r.blurb}</span>
+        </div>
+        {r.status === 'ready' && r.href ? (
+          <a class="res-dl" href={r.href} download>download ↓</a>
+        ) : (
+          <span class="res-soon">soon</span>
+        )}
+      </li>
+    ))}
+  </ul>
+
+  <Subscribe variant="page" src="resources"
+    heading="Get new resources as they drop."
+    blurb="Reports and specs ship alongside the proof drops. Subscribe and you won't miss them." />
+</Base>
+
+<style>
+  .rhead h1 { color: var(--green); font-size: 26px; text-shadow: var(--glow-green); margin: 6px 0; }
+  .sub { color: var(--text); max-width: 70ch; }
+  .reslist { list-style: none; padding: 0; margin: 24px 0; }
+  .res {
+    display: flex; gap: 16px; align-items: center; justify-content: space-between;
+    border: 1px solid var(--border); border-left: 2px solid var(--green-dim);
+    border-radius: 8px; padding: 14px 16px; margin-bottom: 10px; background: var(--bg-soft);
+  }
+  .res.draft { border-left-color: var(--border); opacity: 0.75; }
+  .res-main { display: flex; flex-direction: column; }
+  .res-title { color: var(--green); font-weight: 700; }
+  .res.draft .res-title { color: var(--muted); }
+  .res-blurb { color: var(--muted); font-size: 13.5px; max-width: 62ch; }
+  .res-dl {
+    flex: none; background: var(--pink); color: #1a0014; border-radius: 6px;
+    padding: 8px 14px; font-weight: 700; font-size: 13px;
+  }
+  .res-dl:hover { box-shadow: var(--glow-pink); }
+  .res-soon { flex: none; color: var(--muted); font-size: 12px; border: 1px solid var(--border); border-radius: 999px; padding: 3px 10px; }
+  @media (max-width: 560px) { .res { flex-direction: column; align-items: flex-start; } }
+</style>

@@ -3,6 +3,9 @@ title: "proof drop #1 — running a 24 GB model on a 24 GB GPU (and the honest c
 date: 2026-06-27
 description: "UFM lets a single RTX 4090 run a routed model whose expert bank doesn't fit in VRAM. Here's the benchmark, the code, and the regime where it doesn't help."
 tags: ["ufm", "benchmark", "local-first", "memory", "moe", "rtx4090"]
+track: memory
+proofDrop: true
+ogImage: /img/ufm/vram.png
 ---
 
 This is the first formal proof drop for the lab. The rule for these is simple:

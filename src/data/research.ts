@@ -1,0 +1,115 @@
+// Canonical, structured map of the Éthiqueia research program.
+// Rendered at /research. Prose long-form lives in RESEARCH_PROGRAM.md; this is
+// the machine-readable map that links threads → projects → repos → proof.
+import type { TrackId } from './tracks';
+
+export type Maturity = 'concept' | 'prototype' | 'shipped' | 'benchmarked' | 'published';
+
+export const maturityRank: Record<Maturity, number> = {
+  concept: 0, prototype: 1, shipped: 2, benchmarked: 3, published: 4,
+};
+
+export type ProjectRef = {
+  name: string;
+  slug?: string; // site project page
+  repo?: string; // github
+  note?: string;
+};
+
+export type Thread = {
+  track: TrackId;
+  lineage: string;
+  projects: ProjectRef[];
+  leadArtifact: { label: string; href: string };
+  maturity: Maturity;
+  evidence: string;
+  nextProof: string;
+  posts: string[]; // blog ids
+};
+
+export const THESIS =
+  'Capable AI you can own — on commodity hardware — through self-similar architecture and memory that organizes itself.';
+
+export const threads: Thread[] = [
+  {
+    track: 'memory',
+    lineage:
+      'FMM (Fractal Memory Matrix / Memory-Mapped) → UFM (Unified Fractal Memory). The FMM idea independently reappeared in Fractal Neurons, QJSON Agents, fnn_test, and Hermes before being extracted; UFM generalized it from semantic memory to physical memory (VRAM/RAM as one pool).',
+    projects: [
+      { name: 'UFM', slug: 'ufm', repo: 'https://github.com/Linutesto/ufm' },
+      { name: 'FMM', repo: 'https://github.com/Linutesto/fmm' },
+    ],
+    leadArtifact: { label: 'UFM benchmark — proof drop #1', href: '/blog/ufm-benchmark/' },
+    maturity: 'benchmarked',
+    evidence:
+      'Proof drop #1 (2026-06-27): runs a 24 GB expert bank on a 23.5 GB RTX 4090 where baseline OOMs; within ~1% of baseline throughput when the working set fits the budget; ~240× faster than naive offload; honest no-locality failure case documented and reproducible.',
+    nextProof:
+      'Training-time paging (autograd-safe) + OffloadedAdam memory curves; cost-aware eviction vs. LRU ablation; bf16 + an NVMe tier.',
+    posts: ['ufm-benchmark'],
+  },
+  {
+    track: 'cognition',
+    lineage:
+      'Hermes / NeuroArch (a cognitive architecture with idle cognition and self-revising beliefs) · AEON (an AI-governed deterministic world).',
+    projects: [
+      {
+        name: 'Hermes / NeuroArch',
+        slug: 'hermes',
+        note:
+          'Hermes is already a competent agent today. NeuroArch is the cycle layer on top — idle cognition, belief recalibration, dream-phase crystallization — which it does not yet fully run. The thread is about giving a working agent those background cycles.',
+      },
+      { name: 'AEON', slug: 'aeon' },
+    ],
+    leadArtifact: { label: 'Hermes / NeuroArch', href: '/projects/hermes/' },
+    maturity: 'prototype',
+    evidence:
+      'A running system. Internal behaviors are not yet formally measured, so all capability claims are marked speculative.',
+    nextProof:
+      'Measurable, reproducible behaviors: memory growth over time, belief-revision traces, idle-cycle throughput — before any public capability claim.',
+    posts: [],
+  },
+  {
+    track: 'agents',
+    lineage:
+      'QJSON Agents + YSON (persona/state format) → Alicia (local autonomous agent) → agentos (live kernel). (OpenPaw exists as background tooling, not a core research pillar.)',
+    projects: [
+      { name: 'QJSON Agents / YSON', slug: 'qjson-agents' },
+      { name: 'agentos', slug: 'agentos' },
+    ],
+    leadArtifact: { label: 'QJSON Agents / YSON', href: '/projects/qjson-agents/' },
+    maturity: 'shipped',
+    evidence:
+      'Code others can run; agents whose identity + memory are plain files. The YSON spec and an inspectable-memory demo are not yet written up.',
+    nextProof:
+      'A published YSON spec; a reproducible demo of inspectable, file-based agent memory compared against opaque memory stacks.',
+    posts: [],
+  },
+  {
+    track: 'training',
+    lineage:
+      'byte_gpt → ForgeLM → the 4090 capacity planner / autopilot. UFM (Memory Systems) is the bridge that lets this thread scale past 24 GB.',
+    projects: [{ name: 'ForgeLM', slug: 'forgelm' }],
+    leadArtifact: { label: 'ForgeLM', href: '/projects/forgelm/' },
+    maturity: 'shipped',
+    evidence: 'A live, working from-scratch training stack on one consumer GPU; no public reproducible recipe doc yet.',
+    nextProof:
+      'An end-to-end reproducible run with logged loss curves, tokens/sec, and exact hardware/software versions.',
+    posts: [],
+  },
+  {
+    track: 'fractal',
+    lineage:
+      'Fractal Neurons (the flagship) → fnn_test (fractal neurons as conversational agents) → FNAS / FNAS-V2 (genetic search over fractal genomes). LILA is the persona/emergence layer — treated as inspiration, explicitly speculative.',
+    projects: [
+      { name: 'Fractal Neurons', slug: 'fractal-neurons' },
+      { name: 'FNAS', slug: 'fnas' },
+    ],
+    leadArtifact: { label: 'Fractal Neurons', href: '/projects/fractal-neurons/' },
+    maturity: 'prototype',
+    evidence:
+      'Rich and documented, but NOT yet benchmarked. All architectural-advantage claims are marked speculative until measured.',
+    nextProof:
+      'A controlled, small-scale comparison of the fractal backbone vs. a parameter-matched transformer (loss/perplexity at equal params + equal compute).',
+    posts: [],
+  },
+];

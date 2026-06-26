@@ -1,0 +1,82 @@
+---
+import Base from '../../layouts/Base.astro';
+import Subscribe from '../../components/Subscribe.astro';
+import { getCollection } from 'astro:content';
+import { trackList } from '../../data/tracks';
+
+const issues = (await getCollection('newsletter'))
+  .filter((i) => !i.data.draft)
+  .sort((a, b) => b.data.issue - a.data.issue);
+---
+<Base
+  title="newsletter — Yan Desbiens · Éthiqueia"
+  description="Get every proof drop. Reproducible local-first AI research, no hype — benchmarks, architectures, and field notes from a one-GPU lab."
+>
+  <p class="prompt">
+    <b>yan@yandesbiens</b>:<span class="path">~</span>$ <span class="cmd">./newsletter --subscribe</span>
+  </p>
+
+  <header class="nhead">
+    <h1>The Éthiqueia newsletter</h1>
+    <p class="sub">
+      Benchmarks, architectures, and field notes from a one-GPU AI lab. Every
+      <a href="/research">proof drop</a> lands here first. No hype, no spam — just reproducible
+      work and the occasional honest failure.
+    </p>
+  </header>
+
+  <Subscribe variant="page" src="newsletter-page" heading="Get every proof drop."
+    blurb="Reproducible local-first AI research. No hype." />
+
+  <h2 class="sec">// what you'll get</h2>
+  <ul class="tracks">
+    {trackList.map((t) => (
+      <li>
+        <span class="tlabel" style={`color:${t.accent}`}>{t.label}</span>
+        <span class="tblurb">{t.blurb}</span>
+      </li>
+    ))}
+  </ul>
+
+  <h2 class="sec">// issue archive</h2>
+  {issues.length === 0 ? (
+    <p class="muted"># issue #1 is being prepared.</p>
+  ) : (
+    <ul class="issues">
+      {issues.map((i) => (
+        <li>
+          <a href={`/newsletter/${i.id}/`}>
+            <span class="num">#{i.data.issue}</span>
+            <span class="meta">
+              <span class="title">{i.data.title}</span>
+              {i.data.description && <span class="desc">{i.data.description}</span>}
+            </span>
+            <span class="date">{i.data.date.toISOString().slice(0, 10)}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  )}
+
+  <p class="more"><a href="/rss/newsletter.xml">→ subscribe by RSS instead</a></p>
+</Base>
+
+<style>
+  .nhead h1 { color: var(--green); font-size: 26px; text-shadow: var(--glow-green); margin: 6px 0; }
+  .sub { color: var(--text); max-width: 70ch; }
+  .sec { color: var(--pink); margin: 34px 0 12px; font-size: 15px; }
+  .tracks { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+  .tracks li { border-left: 2px solid var(--border); padding: 2px 0 2px 14px; }
+  .tlabel { display: inline; font-weight: 700; margin-right: 8px; }
+  .tblurb { color: var(--muted); font-size: 14px; }
+  .issues { list-style: none; padding: 0; margin: 0; }
+  .issues li { border-bottom: 1px solid var(--border); }
+  .issues a { display: flex; gap: 14px; padding: 14px 4px; color: var(--text); align-items: baseline; }
+  .issues a:hover { color: var(--pink); background: #ffffff05; text-shadow: none; }
+  .num { color: var(--pink); font-weight: 700; flex: none; }
+  .meta { display: flex; flex-direction: column; flex: 1; }
+  .meta .title { font-size: 16px; }
+  .meta .desc { color: var(--muted); font-size: 13px; }
+  .date { color: var(--green-dim); font-size: 13px; flex: none; }
+  .more { margin-top: 28px; }
+</style>

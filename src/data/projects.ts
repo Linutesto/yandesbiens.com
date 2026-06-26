@@ -19,6 +19,7 @@ export const projects: Project[] = [
     body: [
       "Hermes is the project I keep coming back to: a cognitive architecture that doesn't just answer prompts — it runs. It thinks in the background, keeps a persistent memory, and slowly reorganizes what it believes about the world.",
       "Under the hood it's a market. Dozens of local models bid on cognitive work, and a router hands tasks to whoever's best for the job. Idle cycles aren't wasted — they go into research, belief recalibration, and a dream phase that crystallizes scattered notes into durable memory.",
+      "To be precise about where it stands: Hermes is already a competent agent today — it reasons, routes, and uses tools well. NeuroArch is the layer on top of that — the idle-cognition, belief-recalibration, and dream-crystallization cycles — which it doesn't yet fully run. The work is about giving a capable agent those background cycles, not building competence from scratch.",
       "It's the closest thing I have to a system that's actually alive between conversations.",
     ],
     highlights: [

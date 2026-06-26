@@ -1,0 +1,147 @@
+---
+import Base from '../layouts/Base.astro';
+import Subscribe from '../components/Subscribe.astro';
+import { tracks } from '../data/tracks';
+import { threads, THESIS, type Maturity } from '../data/research';
+import { getCollection } from 'astro:content';
+
+const posts = await getCollection('blog');
+const postTitle = (id: string) => posts.find((p) => p.id === id)?.data.title ?? id;
+
+const matCls: Record<Maturity, string> = {
+  concept: 'm-concept', prototype: 'm-proto', shipped: 'm-shipped',
+  benchmarked: 'm-bench', published: 'm-pub',
+};
+const matOrder: Maturity[] = ['concept', 'prototype', 'shipped', 'benchmarked', 'published'];
+---
+<Base
+  title="research — Yan Desbiens · Éthiqueia"
+  description="The canonical map of the Éthiqueia research program: thesis, threads, projects, benchmarks, maturity, and the next proof needed."
+>
+  <p class="prompt">
+    <b>yan@yandesbiens</b>:<span class="path">~</span>$ <span class="cmd">cat research_program.md</span>
+  </p>
+
+  <header class="rhead">
+    <h1>The Research Program</h1>
+    <p class="sub">
+      Independent AI research by <span class="green">Yan Desbiens</span>, conducted at
+      <span class="pink">Éthiqueia Québec inc.</span> — one evolving program, not scattered repos.
+    </p>
+    <blockquote class="thesis">{THESIS}</blockquote>
+    <p class="legend">
+      maturity:
+      {matOrder.map((m) => (
+        <span class:list={['mbadge', matCls[m]]}>{m}</span>
+      ))}
+      <span class="note"> · a thread is only “benchmarked” once a one-command repro exists.</span>
+    </p>
+  </header>
+
+  {threads.map((t) => {
+    const track = tracks[t.track];
+    return (
+      <section class="thread" id={t.track}>
+        <div class="thread-top">
+          <h2 style={`color:${track.accent}`}>{track.label}</h2>
+          <span class:list={['mbadge', matCls[t.maturity]]}>{t.maturity}</span>
+        </div>
+        <p class="blurb">{track.blurb}</p>
+
+        <div class="grid">
+          <div class="cell">
+            <span class="k">lineage</span>
+            <p>{t.lineage}</p>
+          </div>
+          <div class="cell">
+            <span class="k">projects</span>
+            <ul class="plist">
+              {t.projects.map((p) => (
+                <li>
+                  {p.slug ? <a href={`/projects/${p.slug}/`}>{p.name}</a> : <span>{p.name}</span>}
+                  {p.repo && <> · <a href={p.repo} target="_blank" rel="noopener">repo ↗</a></>}
+                  {p.note && <span class="pnote">{p.note}</span>}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div class="cell">
+            <span class="k">lead artifact</span>
+            <p><a href={t.leadArtifact.href}>{t.leadArtifact.label} →</a></p>
+          </div>
+          <div class="cell">
+            <span class="k">evidence status</span>
+            <p>{t.evidence}</p>
+          </div>
+          <div class="cell wide">
+            <span class="k">next proof needed</span>
+            <p class="next">{t.nextProof}</p>
+          </div>
+          {t.posts.length > 0 && (
+            <div class="cell wide">
+              <span class="k">writing</span>
+              <ul class="plist">
+                {t.posts.map((id) => <li><a href={`/blog/${id}/`}>{postTitle(id)}</a></li>)}
+              </ul>
+            </div>
+          )}
+        </div>
+      </section>
+    );
+  })}
+
+  <section class="policy">
+    <h2>// the evidence bar</h2>
+    <p>
+      Nothing ships with a performance claim unless it is <em>(a)</em> reproducible from a
+      one-command script in-repo, or <em>(b)</em> explicitly tagged <em>speculative</em>.
+      Visionary concepts are inspiration; engineering is proof. We earn credibility on the
+      verifiable threads to buy the right to publish the speculative ones.
+    </p>
+  </section>
+
+  <Subscribe variant="page" src="research" heading="Follow the program."
+    blurb="Each thread advances by proof drop. Get them as they ship — benchmarks, architectures, field notes." />
+</Base>
+
+<style>
+  .rhead { margin: 8px 0 30px; }
+  .rhead h1 { color: var(--green); font-size: 28px; text-shadow: var(--glow-green); margin: 6px 0; }
+  .sub { color: var(--text); max-width: 70ch; }
+  .thesis {
+    border-left: 2px solid var(--pink); margin: 18px 0; padding: 6px 0 6px 16px;
+    color: var(--pink-soft); font-size: 17px; max-width: 70ch;
+  }
+  .legend { color: var(--muted); font-size: 12px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .legend .note { color: var(--muted); }
+  .mbadge {
+    font-size: 11px; padding: 2px 7px; border-radius: 999px; border: 1px solid var(--border);
+    text-transform: lowercase;
+  }
+  .m-concept { color: var(--muted); }
+  .m-proto { color: var(--amber); border-color: #6b551f; }
+  .m-shipped { color: var(--green); border-color: var(--green-dim); }
+  .m-bench { color: #1a0014; background: var(--pink); border-color: var(--pink); font-weight: 700; }
+  .m-pub { color: var(--pink-soft); border-color: var(--pink); }
+
+  .thread { border-top: 1px solid var(--border); padding: 22px 0; }
+  .thread-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .thread-top h2 { font-size: 20px; margin: 0; }
+  .blurb { color: var(--muted); margin: 4px 0 16px; max-width: 75ch; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 24px; }
+  .cell.wide { grid-column: 1 / -1; }
+  .cell .k {
+    display: block; color: var(--green-dim); font-size: 11px; text-transform: uppercase;
+    letter-spacing: 1px; margin-bottom: 4px;
+  }
+  .cell p { margin: 0; color: var(--text); font-size: 14px; }
+  .next { color: var(--pink-soft) !important; }
+  .plist { list-style: none; margin: 0; padding: 0; }
+  .plist li { font-size: 14px; margin-bottom: 4px; }
+  .pnote { display: block; color: var(--muted); font-size: 12.5px; margin-top: 2px; }
+  .policy { border-top: 1px solid var(--border); padding-top: 20px; margin-top: 8px; }
+  .policy h2 { color: var(--pink); }
+  .policy p { max-width: 72ch; color: var(--text); }
+  .policy em { color: var(--pink-soft); font-style: normal; }
+  @media (max-width: 620px) { .grid { grid-template-columns: 1fr; } }
+</style>

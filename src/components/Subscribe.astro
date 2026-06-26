@@ -1,0 +1,127 @@
+---
+// Reusable newsletter capture. Posts to /api/subscribe (Cloudflare Pages Function,
+// KV-backed, privacy-first). Progressive enhancement: works as a plain POST; a tiny
+// inline script upgrades it to async with a success state.
+interface Props {
+  variant?: 'hero' | 'inline' | 'footer' | 'page';
+  heading?: string;
+  blurb?: string;
+  src?: string;
+}
+const {
+  variant = 'inline',
+  heading = 'Get every proof drop.',
+  blurb = 'Reproducible local-first AI research. No hype. Benchmarks, architectures, and field notes from a one-GPU lab.',
+  src = 'inline',
+} = Astro.props;
+---
+<section class:list={['subscribe', `sub-${variant}`]}>
+  {variant !== 'footer' && (
+    <p class="sub-prompt">
+      <span class="ps">yan@yandesbiens</span>:<span class="path">~</span>$ <span class="cmd">subscribe --proof-drops</span>
+    </p>
+  )}
+  <div class="sub-card">
+    {heading && <h3 class="sub-h">{heading}</h3>}
+    {blurb && <p class="sub-blurb">{blurb}</p>}
+    <form class="subscribe-form" action="/api/subscribe" method="POST" novalidate data-src={src}>
+      <div class="sub-row">
+        <input
+          class="sub-input" type="email" name="email" required
+          placeholder="you@domain.com" autocomplete="email" aria-label="email address"
+        />
+        <button class="sub-btn" type="submit">subscribe</button>
+      </div>
+      <input type="text" name="website" class="sub-hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+      <p class="sub-msg" role="status" aria-live="polite"></p>
+      <p class="sub-fine">No spam. Unsubscribe anytime. <a href="/newsletter">What you get →</a></p>
+    </form>
+    <noscript><p class="sub-fine">Email <a href="mailto:yandesbiens420@gmail.com">yandesbiens420@gmail.com</a> with "subscribe".</p></noscript>
+  </div>
+</section>
+
+<style>
+  .subscribe { margin: 28px 0; }
+  .sub-prompt { color: var(--muted); font-size: 13px; margin: 0 0 8px; }
+  .sub-prompt .ps { color: var(--green); }
+  .sub-prompt .path { color: var(--pink); }
+  .sub-prompt .cmd { color: var(--text); }
+  .sub-card {
+    border: 1px solid var(--border);
+    border-left: 2px solid var(--pink);
+    border-radius: 8px;
+    background: var(--bg-soft);
+    padding: 18px 18px 14px;
+  }
+  .sub-h { margin: 0 0 6px; color: var(--green); font-size: 17px; text-shadow: var(--glow-green); }
+  .sub-blurb { margin: 0 0 14px; color: var(--text); max-width: 60ch; font-size: 14px; }
+  .sub-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .sub-input {
+    flex: 1 1 220px; min-width: 0;
+    background: var(--bg); color: var(--text);
+    border: 1px solid var(--border); border-radius: 6px;
+    padding: 10px 12px; font-family: var(--mono); font-size: 14px;
+  }
+  .sub-input:focus { outline: none; border-color: var(--pink); box-shadow: var(--glow-pink); }
+  .sub-btn {
+    background: var(--pink); color: #1a0014;
+    border: none; border-radius: 6px; padding: 10px 18px;
+    font-family: var(--mono); font-weight: 700; font-size: 14px; cursor: pointer;
+    transition: transform .08s ease, box-shadow .15s ease;
+  }
+  .sub-btn:hover { box-shadow: var(--glow-pink); }
+  .sub-btn:active { transform: translateY(1px); }
+  .sub-btn:disabled { opacity: .6; cursor: progress; }
+  .sub-hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+  .sub-msg { margin: 10px 0 0; font-size: 13px; min-height: 1.2em; }
+  .sub-msg.ok { color: var(--green); }
+  .sub-msg.err { color: var(--pink-soft); }
+  .sub-fine { margin: 8px 0 0; color: var(--muted); font-size: 12px; }
+  /* footer variant: tighter, no card chrome */
+  .sub-footer { margin: 0; }
+  .sub-footer .sub-card { background: none; border: none; border-left: none; padding: 0; }
+  .sub-footer .sub-h { font-size: 14px; }
+  .sub-footer .sub-blurb { font-size: 13px; margin-bottom: 10px; }
+</style>
+
+<script>
+  const forms = document.querySelectorAll<HTMLFormElement>('.subscribe-form');
+  forms.forEach((form) => {
+    const msg = form.querySelector<HTMLElement>('.sub-msg')!;
+    const btn = form.querySelector<HTMLButtonElement>('.sub-btn')!;
+    const input = form.querySelector<HTMLInputElement>('.sub-input')!;
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      msg.className = 'sub-msg';
+      msg.textContent = '';
+      const email = input.value.trim();
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        msg.classList.add('err'); msg.textContent = '↳ enter a valid email.'; return;
+      }
+      btn.disabled = true; const label = btn.textContent; btn.textContent = '…';
+      try {
+        const r = await fetch('/api/subscribe', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            email,
+            website: (form.querySelector<HTMLInputElement>('.sub-hp')?.value) || '',
+            src: form.dataset.src || 'site',
+          }),
+        });
+        const data = await r.json().catch(() => ({ ok: false, error: 'network error' }));
+        if (r.ok && data.ok) {
+          msg.classList.add('ok');
+          msg.textContent = data.already ? '↳ already on the list. 🩷' : '↳ subscribed. proof drops incoming. 🩷';
+          form.reset();
+        } else {
+          msg.classList.add('err'); msg.textContent = '↳ ' + (data.error || 'something broke. try again.');
+        }
+      } catch {
+        msg.classList.add('err'); msg.textContent = '↳ network error. try again.';
+      } finally {
+        btn.disabled = false; btn.textContent = label;
+      }
+    });
+  });
+</script>

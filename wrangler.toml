@@ -7,6 +7,11 @@ compatibility_date = "2024-09-23"
 binding = "CHAT_RL"
 id = "89fd1524cfb443e8b4efceac0c21999e"
 
+# Newsletter subscribers (functions/api/subscribe.ts)
+[[kv_namespaces]]
+binding = "SUBSCRIBERS"
+id = "72cba153939c4120ab9979c1ece9037f"
+
 # Non-secret runtime config. CF_AI_TOKEN is set separately as a Pages secret.
 [vars]
 CF_ACCOUNT_ID = "c114e3170dd7fbc2de75d9be1a3e7edd"

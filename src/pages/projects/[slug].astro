@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import Subscribe from '../../components/Subscribe.astro';
 import { projects } from '../../data/projects';
 
 export function getStaticPaths() {
@@ -53,6 +54,10 @@ const next = projects[(idx + 1) % projects.length];
       {project.stack.map((s) => <li>{s}</li>)}
     </ul>
   </article>
+
+  <Subscribe variant="page" src={`project-${project.slug}`}
+    heading="Follow this work."
+    blurb="This project advances by proof drop. Get each one as it ships — reproducible, no hype." />
 
   <nav class="pager">
     <a href="/#projects">← all projects</a>
