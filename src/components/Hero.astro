@@ -1,0 +1,118 @@
+---
+// Boot-sequence hero. Lines are typed out on load via a tiny inline script.
+const bootLines = [
+  { t: 'cmd',  text: 'whoami' },
+  { t: 'out',  text: 'yan desbiens — AI systems builder' },
+  { t: 'cmd',  text: 'cat ~/.profile' },
+  { t: 'out',  text: 'local-first AI · LLM training on a single RTX 4090 · autonomous agents' },
+  { t: 'out',  text: 'I build cognitive systems that run on my own hardware.' },
+  { t: 'cmd',  text: 'uptime' },
+  { t: 'out',  text: 'shipping daily · coffee: critical · gpu: warm' },
+];
+---
+<section class="hero">
+  <div class="window">
+    <div class="titlebar">
+      <span class="btn r"></span><span class="btn y"></span><span class="btn g"></span>
+      <span class="tt">yan@yandesbiens: ~</span>
+    </div>
+    <pre class="screen" id="boot" data-lines={JSON.stringify(bootLines)}></pre>
+  </div>
+  <p class="tag">
+    <span class="pink">&gt;</span> welcome to my corner of the net.
+    scroll down, or <a href="/#chat">talk to my AI</a>.
+  </p>
+</section>
+
+<style>
+  .hero { padding-top: 44px; }
+  .window {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--panel);
+    box-shadow: 0 0 0 1px #000, 0 24px 60px -30px #000, var(--glow-green);
+    overflow: hidden;
+  }
+  .titlebar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 12px;
+    background: #0a0e13;
+    border-bottom: 1px solid var(--border);
+  }
+  .btn { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+  .btn.r { background: #ff5f57; }
+  .btn.y { background: #febc2e; }
+  .btn.g { background: #28c840; }
+  .tt { color: var(--muted); font-size: 12px; margin-left: 8px; }
+  .screen {
+    margin: 0;
+    padding: 22px 20px 26px;
+    font-family: var(--mono);
+    font-size: 15px;
+    line-height: 1.85;
+    white-space: pre-wrap;
+    word-break: break-word;
+    min-height: 280px;
+  }
+  .tag { color: var(--muted); margin-top: 18px; }
+  /* line styles injected via class names from script */
+  :global(.boot-cmd) { color: var(--text); }
+  :global(.boot-cmd .ps) { color: var(--green); }
+  :global(.boot-cmd .ps .at) { color: var(--pink); }
+  :global(.boot-out) { color: var(--green); text-shadow: 0 0 6px #5ef08a22; }
+  :global(.boot-cur) {
+    display: inline-block; width: 9px; height: 1.05em;
+    background: var(--green); margin-left: 2px; vertical-align: text-bottom;
+    animation: blink 1.05s steps(1) infinite; box-shadow: var(--glow-green);
+  }
+</style>
+
+<script>
+  type Line = { t: 'cmd' | 'out'; text: string };
+  const el = document.getElementById('boot');
+  if (el) {
+    const lines: Line[] = JSON.parse(el.dataset.lines || '[]');
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const ps = '<span class="ps">yan<span class="at">@</span>yandesbiens<span class="at">:</span>~$ </span>';
+
+    const render = (done: string, typing = '') => {
+      el.innerHTML = done + typing + '<span class="boot-cur"></span>';
+    };
+
+    if (reduce) {
+      // no animation: print everything at once
+      el!.innerHTML = lines
+        .map((l) => l.t === 'cmd'
+          ? `<div class="boot-cmd">${ps}${l.text}</div>`
+          : `<div class="boot-out">${l.text}</div>`)
+        .join('') + '<span class="boot-cur"></span>';
+    } else {
+      let done = '';
+      let li = 0;
+      const next = () => {
+        if (li >= lines.length) { render(done); return; }
+        const line = lines[li];
+        const prefix = line.t === 'cmd' ? ps : '';
+        const cls = line.t === 'cmd' ? 'boot-cmd' : 'boot-out';
+        let ci = 0;
+        const speed = line.t === 'cmd' ? 38 : 12;
+        const tick = () => {
+          ci++;
+          const partial = `<div class="${cls}">${prefix}${line.text.slice(0, ci)}</div>`;
+          render(done, partial);
+          if (ci < line.text.length) {
+            setTimeout(tick, speed + Math.random() * 30);
+          } else {
+            done += `<div class="${cls}">${prefix}${line.text}</div>`;
+            li++;
+            setTimeout(next, line.t === 'cmd' ? 240 : 360);
+          }
+        };
+        tick();
+      };
+      next();
+    }
+  }
+</script>

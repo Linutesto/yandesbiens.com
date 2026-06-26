@@ -1,0 +1,37 @@
+---
+const year = new Date().getFullYear();
+---
+<footer class="foot">
+  <div class="wrap">
+    <span class="muted">
+      <span class="green">$</span> echo "built with astro + cloudflare · {year}"
+    </span>
+    <div class="socials">
+      <a href="https://github.com/linutesto" target="_blank" rel="noopener">github</a>
+      <span class="sep">·</span>
+      <a href="https://facebook.com/yan.desbiens.75" target="_blank" rel="noopener">facebook</a>
+      <span class="sep">·</span>
+      <a href="mailto:yandesbiens420@gmail.com">email</a>
+      <span class="sep">·</span>
+      <a href="/blog">blog</a>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .foot {
+    border-top: 1px solid var(--border);
+    margin-top: 96px;
+    padding: 26px 0 40px;
+    font-size: 13px;
+  }
+  .foot .wrap {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .socials a { color: var(--muted); }
+  .socials a:hover { color: var(--pink); }
+  .sep { color: var(--border); margin: 0 4px; }
+</style>

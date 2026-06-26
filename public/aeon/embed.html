@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+  <title>AEON — living world</title>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+  <link rel="stylesheet" href="/aeon/css/embed.css" />
+</head>
+<body>
+  <canvas id="world"></canvas>
+
+  <div id="loading" class="loading">
+    <span class="spin">◈</span> waking the world…
+  </div>
+
+  <div class="chiprow overlays">
+    <button class="chip active" data-overlay="territory">Biome</button>
+    <button class="chip" data-overlay="political">Nations</button>
+    <button class="chip" data-overlay="population">Population</button>
+    <button class="chip" data-overlay="economy">Economy</button>
+    <button class="chip" data-overlay="religion">Religion</button>
+    <button class="chip" data-overlay="war">War</button>
+    <button class="chip" data-overlay="migration">Migration</button>
+    <button class="chip" data-overlay="resources">Resources</button>
+    <button class="chip" data-overlay="climate">Climate</button>
+  </div>
+
+  <div class="chiprow cams">
+    <button class="chip cam active" data-cam="god">🌍 God</button>
+    <button class="chip cam" data-cam="civilization">🏛 Civ</button>
+    <button class="chip cam" data-cam="city">🏙 City</button>
+    <button class="chip cam" data-cam="timelapse">⏩ Time-lapse</button>
+  </div>
+
+  <div class="legend">
+    <span><i style="background:#ffd24a"></i>trade</span>
+    <span><i style="background:#4ad0ff"></i>migrants</span>
+    <span><i style="background:#ff4a4a"></i>army</span>
+    <span><i style="background:#c07bff"></i>explorer</span>
+  </div>
+
+  <a class="badge" href="https://github.com/linutesto" target="_blank" rel="noopener">
+    recorded AEON world · no AI running · drag to explore
+  </a>
+
+  <script type="module" src="/aeon/js/embed.js"></script>
+</body>
+</html>

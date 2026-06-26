@@ -1,0 +1,57 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+---
+<Base title={`${post.data.title} — yan desbiens`} description={post.data.description}>
+  <p class="prompt">
+    <b>yan@yandesbiens</b>:<span class="path">~/blog</span>$ <span class="cmd">cat {post.id}.md</span>
+  </p>
+
+  <article class="post">
+    <h1>{post.data.title}</h1>
+    <p class="meta">
+      <span class="date">{post.data.date.toISOString().slice(0, 10)}</span>
+      {post.data.tags.map((t) => <span class="tag">#{t}</span>)}
+    </p>
+    <div class="body">
+      <Content />
+    </div>
+  </article>
+
+  <p class="more"><a href="/blog">← back to all posts</a></p>
+</Base>
+
+<style>
+  .post { max-width: 72ch; }
+  .post h1 { color: var(--green); font-size: 26px; margin: 14px 0 6px; text-shadow: var(--glow-green); }
+  .meta { display: flex; gap: 12px; align-items: center; margin: 0 0 26px; font-size: 13px; }
+  .meta .date { color: var(--green-dim); }
+  .meta .tag { color: var(--pink); }
+  .body :global(h2) { color: var(--pink); margin-top: 32px; }
+  .body :global(h3) { color: var(--green); }
+  .body :global(a) { text-decoration: underline; }
+  .body :global(code) {
+    background: #ffffff0c; border: 1px solid var(--border);
+    border-radius: 4px; padding: 1px 5px; font-size: 13px; color: var(--amber);
+  }
+  .body :global(pre) {
+    background: var(--bg-soft); border: 1px solid var(--border);
+    border-radius: 8px; padding: 16px; overflow-x: auto;
+  }
+  .body :global(pre code) { background: none; border: none; padding: 0; color: var(--text); }
+  .body :global(blockquote) {
+    border-left: 2px solid var(--pink); margin: 0; padding-left: 16px; color: var(--muted);
+  }
+  .more { margin-top: 36px; }
+</style>

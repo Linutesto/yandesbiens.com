@@ -1,0 +1,26 @@
+{
+  "name": "yandesbiens",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "pages:dev": "wrangler pages dev ./dist --compatibility-date=2024-09-23",
+    "deploy": "astro build && wrangler pages deploy ./dist --project-name yandesbiens"
+  },
+  "dependencies": {
+    "@astrojs/react": "^4.2.0",
+    "astro": "^5.4.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250109.0",
+    "@fontsource/jetbrains-mono": "^5.1.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "wrangler": "^3.99.0"
+  }
+}

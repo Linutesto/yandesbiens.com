@@ -1,0 +1,112 @@
+---
+import Base from '../../layouts/Base.astro';
+import { projects } from '../../data/projects';
+
+export function getStaticPaths() {
+  return projects.map((p) => ({ params: { slug: p.slug }, props: { project: p } }));
+}
+
+const { project } = Astro.props;
+const statusMap = {
+  live: { label: 'live', cls: 'st-live' },
+  wip: { label: 'wip', cls: 'st-wip' },
+  research: { label: 'research', cls: 'st-research' },
+};
+const st = statusMap[project.status];
+const idx = projects.findIndex((p) => p.slug === project.slug);
+const next = projects[(idx + 1) % projects.length];
+---
+<Base title={`${project.name} — yan desbiens`} description={project.desc}>
+  <p class="prompt">
+    <b>yan@yandesbiens</b>:<span class="path">~/projects</span>$ <span class="cmd">cat {project.slug}/README.md</span>
+  </p>
+
+  <article class="detail">
+    <header>
+      <h1>{project.name} <span class:list={['status', st.cls]}>● {st.label}</span></h1>
+      <p class="tagline">{project.tagline}</p>
+    </header>
+
+    {project.featured && (
+      <div class="aeon-frame">
+        <iframe
+          src="/aeon/embed"
+          title="AEON — a live, recorded slice of the world (no AI running)"
+          loading="lazy"
+          allow="fullscreen"
+        ></iframe>
+        <span class="aeon-cap">▲ the actual AEON renderer, replaying a recorded world — drag to explore, switch overlays & cameras</span>
+      </div>
+    )}
+
+    <div class="body">
+      {project.body.map((para) => <p>{para}</p>)}
+    </div>
+
+    <h2>// highlights</h2>
+    <ul class="highlights">
+      {project.highlights.map((h) => <li>{h}</li>)}
+    </ul>
+
+    <h2>// stack</h2>
+    <ul class="stack">
+      {project.stack.map((s) => <li>{s}</li>)}
+    </ul>
+  </article>
+
+  <nav class="pager">
+    <a href="/#projects">← all projects</a>
+    <a href={`/projects/${next.slug}/`}>{next.name} →</a>
+  </nav>
+</Base>
+
+<style>
+  .aeon-frame {
+    margin: 8px 0 30px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    background: #0a0e13;
+    box-shadow: 0 0 0 1px #000, var(--glow-green);
+  }
+  .aeon-frame iframe {
+    display: block;
+    width: 100%;
+    height: 520px;
+    border: 0;
+  }
+  .aeon-cap {
+    display: block;
+    padding: 9px 14px;
+    font-size: 11.5px;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+    background: #0a0e13;
+  }
+  @media (max-width: 560px) { .aeon-frame iframe { height: 400px; } }
+
+  .detail { max-width: 74ch; }
+  h1 { color: var(--green); font-size: 27px; margin: 12px 0 4px; text-shadow: var(--glow-green); }
+  h1 .status { font-size: 12px; vertical-align: middle; margin-left: 8px; }
+  .st-live { color: var(--green); }
+  .st-wip { color: var(--amber); }
+  .st-research { color: var(--pink-soft); }
+  .tagline { color: var(--pink); margin: 0 0 22px; }
+  .body p { color: var(--text); }
+  h2 { color: var(--pink); font-size: 15px; margin: 34px 0 12px; letter-spacing: .5px; }
+  .highlights { list-style: none; padding: 0; margin: 0; }
+  .highlights li { padding: 7px 0 7px 22px; position: relative; border-bottom: 1px solid var(--border); }
+  .highlights li::before { content: '▹'; color: var(--green); position: absolute; left: 2px; }
+  .stack { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  .stack li {
+    font-size: 12px; color: var(--green-dim);
+    border: 1px solid var(--border); border-radius: 4px; padding: 3px 9px; background: #ffffff05;
+  }
+  .pager {
+    display: flex; justify-content: space-between; gap: 12px;
+    margin-top: 46px; padding-top: 18px; border-top: 1px solid var(--border);
+    font-size: 14px;
+  }
+  .pager a { color: var(--muted); }
+  .pager a:hover { color: var(--pink); }
+</style>

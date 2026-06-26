@@ -1,0 +1,57 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; height: 100%; overflow: hidden; background: #0a0e13; }
+#world { display: block; width: 100vw; height: 100vh; touch-action: none; }
+
+:root {
+  --mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+  --pink: #ff5fd1;
+  --green: #5ef08a;
+}
+
+.loading {
+  position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+  gap: 10px; font-family: var(--mono); color: var(--green); font-size: 15px;
+  background: #07090c; z-index: 20; transition: opacity .6s; letter-spacing: .5px;
+}
+.loading.gone { opacity: 0; pointer-events: none; }
+.loading .spin { display: inline-block; animation: spin 2s linear infinite; color: var(--pink); font-size: 20px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.chiprow {
+  position: fixed; left: 50%; transform: translateX(-50%);
+  display: flex; gap: 6px; flex-wrap: wrap; justify-content: center;
+  max-width: 96vw; z-index: 10;
+}
+.chiprow.overlays { top: 10px; }
+.chiprow.cams { bottom: 12px; }
+
+.chip {
+  font-family: var(--mono); font-size: 12px; color: #c8d6cf;
+  background: rgba(10,14,19,.72); backdrop-filter: blur(6px);
+  border: 1px solid #1c2530; border-radius: 6px; padding: 6px 11px; cursor: pointer;
+  transition: all .15s; white-space: nowrap;
+}
+.chip:hover { border-color: var(--pink); color: var(--pink); }
+.chip.active { color: var(--green); border-color: var(--green); box-shadow: 0 0 10px #5ef08a44; }
+
+.legend {
+  position: fixed; top: 10px; right: 10px; z-index: 10;
+  display: flex; flex-direction: column; gap: 4px;
+  font-family: var(--mono); font-size: 11px; color: #9fb0a8;
+  background: rgba(10,14,19,.72); backdrop-filter: blur(6px);
+  border: 1px solid #1c2530; border-radius: 6px; padding: 8px 10px;
+}
+.legend span { display: flex; align-items: center; gap: 6px; }
+.legend i { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+
+.badge {
+  position: fixed; left: 10px; bottom: 12px; z-index: 10;
+  font-family: var(--mono); font-size: 10.5px; color: #6b7d75; text-decoration: none;
+  background: rgba(10,14,19,.6); border: 1px solid #1c2530; border-radius: 6px; padding: 4px 8px;
+}
+.badge:hover { color: var(--pink); border-color: var(--pink); }
+
+@media (max-width: 560px) {
+  .legend { display: none; }
+  .chip { font-size: 11px; padding: 5px 9px; }
+}

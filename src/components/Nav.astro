@@ -1,0 +1,76 @@
+---
+const links = [
+  { href: '/', label: 'home' },
+  { href: '/#projects', label: 'projects' },
+  { href: '/blog', label: 'blog' },
+  { href: '/#about', label: 'about' },
+  { href: '/#research', label: 'research' },
+  { href: '/#chat', label: 'chat' },
+  { href: '/#contact', label: 'contact' },
+];
+const path = Astro.url.pathname;
+---
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a href="/" class="brand">
+      <span class="dot"></span> yan<span class="pink">@</span>yandesbiens
+    </a>
+    <nav>
+      {links.map((l) => (
+        <a
+          href={l.href}
+          class:list={['link', { active: path === l.href }]}
+        >{l.label}</a>
+      ))}
+    </nav>
+  </div>
+</header>
+
+<style>
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    backdrop-filter: blur(8px);
+    background: color-mix(in srgb, var(--bg) 78%, transparent);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 52px;
+    gap: 16px;
+  }
+  .brand {
+    color: var(--green);
+    font-weight: 500;
+    text-shadow: var(--glow-green);
+    white-space: nowrap;
+  }
+  .brand:hover { text-shadow: var(--glow-green); }
+  .dot {
+    display: inline-block;
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: var(--glow-green);
+    margin-right: 6px;
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse { 50% { opacity: 0.35; } }
+  nav { display: flex; gap: 4px; flex-wrap: wrap; }
+  .link {
+    color: var(--muted);
+    padding: 4px 9px;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  .link::before { content: '/'; color: var(--green-dim); margin-right: 1px; }
+  .link:hover { color: var(--pink); background: #ffffff08; text-shadow: none; }
+  .link.active { color: var(--green); }
+  @media (max-width: 560px) {
+    .brand { font-size: 13px; }
+    .link { padding: 4px 6px; font-size: 13px; }
+  }
+</style>

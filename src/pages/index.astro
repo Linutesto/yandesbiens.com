@@ -1,0 +1,171 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import Chat from '../components/Chat.tsx';
+import Contact from '../components/Contact.astro';
+import { projects } from '../data/projects';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog'))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 3);
+---
+<Base>
+  <Hero />
+
+  <!-- PROJECTS -->
+  <p class="prompt" id="projects">
+    <b>yan@yandesbiens</b>:<span class="path">~</span>$ <span class="cmd">ls ~/projects/ --detail</span>
+  </p>
+  <div class="grid">
+    {projects.map((p) => <ProjectCard project={p} />)}
+  </div>
+
+  <!-- ABOUT -->
+  <p class="prompt" id="about">
+    <b>yan@yandesbiens</b>:<span class="path">~</span>$ <span class="cmd">cat about.md</span>
+  </p>
+  <div class="about">
+    <p>
+      Hey — I'm <span class="green">Yan</span>. I build AI that runs on my own machine.
+      Not in someone else's cloud, not behind someone else's API. Just me, a single
+      <span class="pink"> RTX 4090</span>, and the stubborn idea that the most interesting
+      intelligence is the kind you can actually <em>own</em> and take apart.
+    </p>
+    <p>
+      I'm mostly self-driven and a little obsessed. I'd rather understand a system down to
+      the bytes than rent it — so I train language models <span class="pink">from scratch</span>,
+      give agents <span class="pink">persistent memory</span>, and build worlds that keep
+      <span class="pink"> thinking while I sleep</span>. Determinism where it counts,
+      chaos where it's fun.
+    </p>
+    <p>
+      Everything here is real and running: cognitive architectures, from-scratch LLMs,
+      procedural worlds, agent runtimes. If any of it makes you curious — the chat below
+      is happy to talk, and so am I.
+    </p>
+    <p class="muted"># status: building something new basically every day. local-first, always.</p>
+  </div>
+
+  <!-- RESEARCH -->
+  <p class="prompt" id="research">
+    <b>yan@yandesbiens</b>:<span class="path">~</span>$ <span class="cmd">cat research.md</span>
+  </p>
+  <div class="about">
+    <p>
+      I do AI research the unfashionable way: alone, on one GPU, from first principles.
+      No lab, no funding, no team — just four years of experiments that kept circling back
+      to the same handful of ideas until they turned into systems. A few threads run through
+      almost everything I build:
+    </p>
+    <ul class="research">
+      <li>
+        <span class="pink">Fractal architectures.</span> Reusing one small set of weights
+        across a self-similar tree to buy depth cheaply — a model with 65k+ runtime nodes at
+        ~70M parameters. This is the core of
+        <a href="/projects/fractal-neurons/">Fractal Neurons</a>, and the substrate
+        <a href="/projects/fnas/">FNAS</a> evolves with a genetic algorithm.
+      </li>
+      <li>
+        <span class="pink">Memory that organizes itself.</span> Flat vector search was never
+        enough. I keep building hierarchical, self-paging memory that grows and prunes its own
+        structure — the <em>Fractal Memory Matrix</em>. It showed up in four projects before I
+        pulled it out as a library:
+        <a href="https://github.com/Linutesto/fmm">github.com/Linutesto/fmm</a>.
+      </li>
+      <li>
+        <span class="pink">A single GPU as a mini-cluster.</span> <em>Unified Fractal Memory</em>
+        treats VRAM + RAM as one elastic pool — prefetch what you need, evict what you don't —
+        so a 4090 trains models that shouldn't fit. Now open source:
+        <a href="https://github.com/Linutesto/ufm">github.com/Linutesto/ufm</a>.
+      </li>
+      <li>
+        <span class="pink">Local-first, inspectable agents.</span> Agents whose identity and
+        memory are plain files you can read and edit — not a black box. That's
+        <a href="/projects/qjson-agents/">QJSON Agents</a>, built around YSON, a persona format
+        of my own design.
+      </li>
+      <li>
+        <span class="pink">Emergence from recursion.</span> The recurring bet that interesting
+        behavior shows up on its own once the loops get tight enough — swarms, teacher–student–critic
+        training, and architectures that keep
+        <a href="/projects/hermes/">thinking while idle</a>.
+      </li>
+    </ul>
+    <p class="muted">
+      # most of this lived on a backup drive until recently. i went digging through it and wrote up
+      what i found → <a href="/blog/the-dig/">the dig — four years of a one-person AI lab</a>.
+    </p>
+  </div>
+
+  <!-- CHAT -->
+  <p class="prompt" id="chat">
+    <b>yan@yandesbiens</b>:<span class="path">~</span>$ <span class="cmd">./chat --talk-to-my-ai</span>
+  </p>
+  <Chat client:visible />
+
+  <!-- BLOG TEASER -->
+  <p class="prompt">
+    <b>yan@yandesbiens</b>:<span class="path">~</span>$ <span class="cmd">tail -3 ~/blog/</span>
+  </p>
+  {posts.length === 0 ? (
+    <p class="muted"># no posts yet — check back soon.</p>
+  ) : (
+    <ul class="postlist">
+      {posts.map((post) => (
+        <li>
+          <a href={`/blog/${post.id}/`}>
+            <span class="date">{post.data.date.toISOString().slice(0, 10)}</span>
+            <span class="title">{post.data.title}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  )}
+  <p class="more"><a href="/blog">→ all posts</a></p>
+
+  <!-- CONTACT -->
+  <p class="prompt" id="contact">
+    <b>yan@yandesbiens</b>:<span class="path">~</span>$ <span class="cmd">./contact --me</span>
+  </p>
+  <p class="muted contact-intro">
+    # working on something interesting, hiring, or just want to talk shop? reach out.
+  </p>
+  <Contact />
+</Base>
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+  .about p { max-width: 70ch; }
+  .about em { color: var(--pink-soft); font-style: normal; }
+  .research {
+    list-style: none;
+    padding: 0;
+    margin: 4px 0 8px;
+    max-width: 72ch;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .research li {
+    border-left: 2px solid var(--border);
+    padding: 2px 0 2px 14px;
+  }
+  .research li:hover { border-left-color: var(--pink); }
+  .research .pink { color: var(--pink); }
+  .postlist { list-style: none; padding: 0; margin: 0; }
+  .postlist li { border-bottom: 1px solid var(--border); }
+  .postlist a {
+    display: flex; gap: 16px; padding: 12px 4px; color: var(--text);
+    align-items: baseline;
+  }
+  .postlist a:hover { color: var(--pink); text-shadow: none; background: #ffffff05; }
+  .postlist .date { color: var(--green-dim); font-size: 13px; flex: none; }
+  .more { margin-top: 16px; }
+  .contact-intro { margin: 0 0 18px; }
+</style>

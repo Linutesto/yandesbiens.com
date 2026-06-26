@@ -1,0 +1,42 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog')).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+---
+<Base title="blog — yan desbiens" description="Notes on AI systems, local-first ML, and autonomous agents.">
+  <p class="prompt">
+    <b>yan@yandesbiens</b>:<span class="path">~</span>$ <span class="cmd">ls ~/blog/ -lt</span>
+  </p>
+
+  {posts.length === 0 ? (
+    <p class="muted"># empty. the first transmission is coming.</p>
+  ) : (
+    <ul class="postlist">
+      {posts.map((post) => (
+        <li>
+          <a href={`/blog/${post.id}/`}>
+            <span class="date">{post.data.date.toISOString().slice(0, 10)}</span>
+            <span class="meta">
+              <span class="title">{post.data.title}</span>
+              {post.data.description && <span class="desc">{post.data.description}</span>}
+            </span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  )}
+</Base>
+
+<style>
+  .postlist { list-style: none; padding: 0; margin: 0; }
+  .postlist li { border-bottom: 1px solid var(--border); }
+  .postlist a { display: flex; gap: 16px; padding: 16px 4px; color: var(--text); }
+  .postlist a:hover { color: var(--pink); text-shadow: none; background: #ffffff05; }
+  .postlist .date { color: var(--green-dim); font-size: 13px; flex: none; padding-top: 2px; }
+  .meta { display: flex; flex-direction: column; }
+  .title { font-size: 16px; }
+  .desc { color: var(--muted); font-size: 13px; }
+</style>

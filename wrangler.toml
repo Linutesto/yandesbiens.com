@@ -1,0 +1,13 @@
+name = "yandesbiens"
+pages_build_output_dir = "./dist"
+compatibility_date = "2024-09-23"
+
+# Rate-limiter store for the chat demo (functions/api/chat.ts)
+[[kv_namespaces]]
+binding = "CHAT_RL"
+id = "89fd1524cfb443e8b4efceac0c21999e"
+
+# Non-secret runtime config. CF_AI_TOKEN is set separately as a Pages secret.
+[vars]
+CF_ACCOUNT_ID = "c114e3170dd7fbc2de75d9be1a3e7edd"
+CF_MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast"
