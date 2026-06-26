@@ -1,0 +1,49 @@
+---
+import Base from '../layouts/Base.astro';
+import Subscribe from '../components/Subscribe.astro';
+import KnowledgeGraph from '../components/KnowledgeGraph.astro';
+import { buildGraph } from '../data/graph';
+
+const g = buildGraph();
+const counts = g.nodes.reduce((a, n) => ((a[n.type] = (a[n.type] || 0) + 1), a), {} as Record<string, number>);
+---
+<Base
+  title="knowledge graph — Yan Desbiens · Éthiqueia"
+  description="An interactive map of the research program: how threads, projects, proof drops, and repositories connect. Nothing exists in isolation."
+>
+  <p class="prompt">
+    <b>yan@yandesbiens</b>:<span class="path">~</span>$ <span class="cmd">./graph --render</span>
+  </p>
+
+  <header class="ghead">
+    <h1>Knowledge graph</h1>
+    <p class="sub">
+      The whole program as one connected object — <span class="green">{counts.track || 0} threads</span>,
+      <span class="green">{counts.project || 0} projects</span>,
+      <span class="green">{counts.publication || 0} proof drop{(counts.publication || 0) === 1 ? '' : 's'}</span>,
+      <span class="green">{counts.repo || 0} repositories</span>. It's generated from the same
+      canonical data as <a href="/research">/research</a>, <a href="/status">/status</a>, and
+      <a href="/cite">/cite</a>, so it can never drift from the work.
+    </p>
+  </header>
+
+  <KnowledgeGraph />
+
+  <p class="ghint">
+    Each new proof drop adds a node and its edges automatically — the graph gets denser with
+    every result. That's the whole idea: <span class="pink">nothing in isolation, everything compounds.</span>
+  </p>
+
+  <Subscribe variant="page" src="graph" heading="Watch the graph grow."
+    blurb="Every proof drop adds a node. Subscribe to follow the program as it densifies." />
+
+  <p class="more"><a href="/research">→ research program</a> · <a href="/timeline">→ timeline</a> · <a href="/status">→ status</a></p>
+</Base>
+
+<style>
+  .ghead h1 { color: var(--green); font-size: 26px; text-shadow: var(--glow-green); margin: 6px 0; }
+  .sub { color: var(--text); max-width: 74ch; }
+  .ghint { color: var(--muted); font-size: 13px; max-width: 70ch; margin: 16px 0; }
+  .ghint .pink { color: var(--pink); }
+  .more { margin-top: 24px; }
+</style>

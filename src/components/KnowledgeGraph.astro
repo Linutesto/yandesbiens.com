@@ -1,0 +1,227 @@
+---
+// Interactive knowledge graph. Data is derived from canonical sources at build
+// time (see src/data/graph.ts); the layout is a tiny dependency-free force sim.
+import { buildGraph } from '../data/graph';
+import { tracks, trackList } from '../data/tracks';
+
+const graph = buildGraph();
+
+// Concrete hex for SVG fills (CSS vars don't apply inside computed SVG attrs).
+const trackColor: Record<string, string> = {
+  memory: '#5ef08a', cognition: '#ff5fd1', agents: '#ffcf5e',
+  training: '#ff9ce4', fractal: '#3a7a52',
+};
+const payload = JSON.stringify({ ...graph, trackColor });
+---
+<section class="kg">
+  <div class="kg-bar">
+    <div class="kg-legend">
+      <span class="li"><span class="sw t-track"></span>thread</span>
+      <span class="li"><span class="sw t-project"></span>project</span>
+      <span class="li"><span class="sw t-pub"></span>proof drop</span>
+      <span class="li"><span class="sw t-repo"></span>repo</span>
+    </div>
+    <div class="kg-chips">
+      <button class="chip active" data-track="all">all</button>
+      {trackList.map((t) => (
+        <button class="chip" data-track={t.id} style={`--c:${trackColor[t.id]}`}>{t.label}</button>
+      ))}
+    </div>
+  </div>
+
+  <div class="kg-stage">
+    <svg id="kg-svg" viewBox="0 0 1000 640" preserveAspectRatio="xMidYMid meet" role="img"
+      aria-label="Knowledge graph connecting research threads, projects, proof drops, and repositories."></svg>
+    <p class="kg-hint">drag nodes · hover to trace links · click to open · filter by thread above</p>
+  </div>
+
+  <script type="application/json" id="kg-data" set:html={payload}></script>
+</section>
+
+<style>
+  .kg { margin: 18px 0 8px; }
+  .kg-bar { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
+  .kg-legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: var(--muted); }
+  .kg-legend .li { display: flex; align-items: center; gap: 5px; }
+  .sw { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+  .sw.t-track { background: #d7dadc; }
+  .sw.t-project { background: #5ef08a; }
+  .sw.t-pub { background: #ff5fd1; }
+  .sw.t-repo { background: #ffcf5e; border-radius: 2px; }
+  .kg-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip {
+    background: var(--bg-soft); color: var(--muted); border: 1px solid var(--border);
+    border-radius: 999px; padding: 3px 10px; font-family: var(--mono); font-size: 11.5px; cursor: pointer;
+  }
+  .chip:hover { color: var(--text); }
+  .chip.active { color: var(--text); border-color: var(--c, var(--green)); box-shadow: inset 0 0 0 1px var(--c, var(--green)); }
+  .kg-stage {
+    border: 1px solid var(--border); border-radius: 10px; background:
+      radial-gradient(700px 380px at 60% -10%, #10202055, transparent 60%), var(--panel);
+    box-shadow: 0 0 0 1px #000, var(--glow-green); overflow: hidden;
+  }
+  #kg-svg { display: block; width: 100%; height: auto; touch-action: none; cursor: grab; }
+  .kg-hint { color: var(--muted); font-size: 11.5px; text-align: center; padding: 6px 0 10px; margin: 0; }
+  :global(.kg-link) { stroke: #2a3a40; stroke-width: 1.2; }
+  :global(.kg-node) { cursor: pointer; }
+  :global(.kg-node text) { font-family: var(--mono); fill: var(--text); font-size: 12px; pointer-events: none; }
+  :global(.kg-node.dim) { opacity: 0.16; }
+  :global(.kg-link.dim) { opacity: 0.06; }
+  :global(.kg-link.hot) { stroke: var(--pink); stroke-width: 1.8; }
+  @media (max-width: 560px) { :global(.kg-node text) { font-size: 14px; } }
+</style>
+
+<script>
+  type N = { id: string; label: string; type: string; href?: string; track?: string;
+    x: number; y: number; vx: number; vy: number; fx?: number | null; fy?: number | null; };
+  type L = { source: string; target: string };
+
+  const el = document.getElementById('kg-data');
+  const svg = document.getElementById('kg-svg') as unknown as SVGSVGElement | null;
+  if (el && svg) {
+    const data = JSON.parse(el.textContent || '{}');
+    const trackColor: Record<string, string> = data.trackColor || {};
+    const W = 1000, H = 640;
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const radius = (t: string) => (t === 'track' ? 13 : t === 'project' ? 9 : t === 'publication' ? 9 : 6);
+    const fill = (n: N) => (n.type === 'track' ? '#0b0f10' : (n.track && trackColor[n.track]) || '#9aa');
+    const stroke = (n: N) => (n.track && trackColor[n.track]) || '#d7dadc';
+
+    const nodes: N[] = data.nodes.map((d: any, i: number) => ({
+      ...d, x: W / 2 + Math.cos(i) * 180 + (Math.random() - 0.5) * 60,
+      y: H / 2 + Math.sin(i) * 120 + (Math.random() - 0.5) * 60, vx: 0, vy: 0,
+    }));
+    const byId = new Map(nodes.map((n) => [n.id, n]));
+    const links: L[] = data.links.filter((l: L) => byId.has(l.source) && byId.has(l.target));
+    const adj = new Map<string, Set<string>>();
+    nodes.forEach((n) => adj.set(n.id, new Set()));
+    links.forEach((l) => { adj.get(l.source)!.add(l.target); adj.get(l.target)!.add(l.source); });
+
+    const SVGNS = 'http://www.w3.org/2000/svg';
+    const gL = document.createElementNS(SVGNS, 'g');
+    const gN = document.createElementNS(SVGNS, 'g');
+    svg.appendChild(gL); svg.appendChild(gN);
+
+    const lineEls = links.map((l) => {
+      const ln = document.createElementNS(SVGNS, 'line');
+      ln.setAttribute('class', 'kg-link');
+      (ln as any)._l = l; gL.appendChild(ln); return ln;
+    });
+    const nodeEls = nodes.map((n) => {
+      const g = document.createElementNS(SVGNS, 'g');
+      g.setAttribute('class', 'kg-node'); (g as any)._n = n;
+      const shape = document.createElementNS(SVGNS, n.type === 'repo' ? 'rect' : 'circle');
+      const r = radius(n.type);
+      if (n.type === 'repo') {
+        shape.setAttribute('width', String(r * 2)); shape.setAttribute('height', String(r * 2));
+        shape.setAttribute('rx', '2');
+      } else { shape.setAttribute('r', String(r)); }
+      shape.setAttribute('fill', fill(n));
+      shape.setAttribute('stroke', stroke(n));
+      shape.setAttribute('stroke-width', n.type === 'track' ? '2.5' : '1.6');
+      g.appendChild(shape);
+      const txt = document.createElementNS(SVGNS, 'text');
+      txt.textContent = n.label;
+      txt.setAttribute('x', String(r + 5)); txt.setAttribute('y', '4');
+      if (n.type !== 'track' && n.type !== 'project') txt.setAttribute('opacity', '0.78');
+      g.appendChild(txt);
+      gN.appendChild(g); return g;
+    });
+
+    // ---- force simulation ----
+    let alpha = 1;
+    function step() {
+      // repulsion
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const a = nodes[i], b = nodes[j];
+          let dx = a.x - b.x, dy = a.y - b.y; let d2 = dx * dx + dy * dy || 1;
+          const f = (9000 * alpha) / d2; const d = Math.sqrt(d2);
+          const ux = dx / d, uy = dy / d;
+          a.vx += ux * f; a.vy += uy * f; b.vx -= ux * f; b.vy -= uy * f;
+        }
+      }
+      // springs
+      for (const l of links) {
+        const a = byId.get(l.source)!, b = byId.get(l.target)!;
+        let dx = b.x - a.x, dy = b.y - a.y; const d = Math.sqrt(dx * dx + dy * dy) || 1;
+        const target = 110; const f = ((d - target) / d) * 0.06 * alpha;
+        const fx = dx * f, fy = dy * f;
+        a.vx += fx; a.vy += fy; b.vx -= fx; b.vy -= fy;
+      }
+      // gravity to center + integrate
+      for (const n of nodes) {
+        n.vx += (W / 2 - n.x) * 0.002 * alpha; n.vy += (H / 2 - n.y) * 0.002 * alpha;
+        if (n.fx != null) { n.x = n.fx; n.y = n.fy!; n.vx = 0; n.vy = 0; }
+        else {
+          n.vx *= 0.86; n.vy *= 0.86; n.x += n.vx; n.y += n.vy;
+          n.x = Math.max(24, Math.min(W - 24, n.x)); n.y = Math.max(20, Math.min(H - 20, n.y));
+        }
+      }
+      alpha *= 0.985;
+    }
+    function render() {
+      lineEls.forEach((ln) => {
+        const l = (ln as any)._l as L; const a = byId.get(l.source)!, b = byId.get(l.target)!;
+        ln.setAttribute('x1', String(a.x)); ln.setAttribute('y1', String(a.y));
+        ln.setAttribute('x2', String(b.x)); ln.setAttribute('y2', String(b.y));
+      });
+      nodeEls.forEach((g) => {
+        const n = (g as any)._n as N;
+        if (n.type === 'repo') { (g.firstChild as SVGRectElement).setAttribute('x', String(n.x - radius(n.type))); (g.firstChild as SVGRectElement).setAttribute('y', String(n.y - radius(n.type))); g.setAttribute('transform', `translate(0,0)`); }
+        g.setAttribute('transform', `translate(${n.x},${n.y})`);
+        if (n.type === 'repo') { (g.firstChild as SVGRectElement).setAttribute('x', String(-radius(n.type))); (g.firstChild as SVGRectElement).setAttribute('y', String(-radius(n.type))); }
+      });
+    }
+    if (reduce) { for (let i = 0; i < 400; i++) step(); render(); }
+    else {
+      let frames = 0;
+      const loop = () => { for (let k = 0; k < 2; k++) step(); render(); if (++frames < 600 && alpha > 0.005) requestAnimationFrame(loop); };
+      requestAnimationFrame(loop);
+    }
+
+    // ---- interactions ----
+    let dragging: N | null = null;
+    const pt = (e: PointerEvent) => {
+      const r = svg.getBoundingClientRect();
+      return { x: ((e.clientX - r.left) / r.width) * W, y: ((e.clientY - r.top) / r.height) * H };
+    };
+    nodeEls.forEach((g) => {
+      const n = (g as any)._n as N;
+      g.addEventListener('pointerenter', () => highlight(n.id));
+      g.addEventListener('pointerleave', () => { if (!dragging) clearHi(); });
+      g.addEventListener('pointerdown', (e) => { dragging = n; n.fx = n.x; n.fy = n.y; (e.target as Element).setPointerCapture?.((e as PointerEvent).pointerId); });
+      g.addEventListener('click', () => { if (n.href) { if (n.href.startsWith('http')) window.open(n.href, '_blank'); else window.location.href = n.href; } });
+    });
+    svg.addEventListener('pointermove', (e) => {
+      if (!dragging) return; const p = pt(e as PointerEvent); dragging.fx = p.x; dragging.fy = p.y; alpha = Math.max(alpha, 0.3);
+      if (reduce) { for (let i = 0; i < 30; i++) step(); render(); }
+    });
+    const endDrag = () => { if (dragging) { dragging.fx = null; dragging.fy = null; dragging = null; clearHi(); alpha = Math.max(alpha, 0.4);
+      if (!reduce) { let f = 0; const l = () => { for (let k = 0; k < 2; k++) step(); render(); if (++f < 120 && alpha > 0.01) requestAnimationFrame(l); }; requestAnimationFrame(l); } } };
+    svg.addEventListener('pointerup', endDrag); svg.addEventListener('pointercancel', endDrag);
+
+    function highlight(id: string) {
+      const keep = adj.get(id)!;
+      nodeEls.forEach((g) => { const n = (g as any)._n as N; g.classList.toggle('dim', n.id !== id && !keep.has(n.id)); });
+      lineEls.forEach((ln) => { const l = (ln as any)._l as L; const hot = l.source === id || l.target === id; ln.classList.toggle('hot', hot); ln.classList.toggle('dim', !hot); });
+    }
+    function clearHi() {
+      nodeEls.forEach((g) => g.classList.remove('dim'));
+      lineEls.forEach((ln) => { ln.classList.remove('hot'); ln.classList.remove('dim'); });
+    }
+
+    // track filter chips
+    document.querySelectorAll<HTMLButtonElement>('.chip').forEach((chip) => {
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('.chip').forEach((c) => c.classList.remove('active'));
+        chip.classList.add('active');
+        const tk = chip.dataset.track;
+        if (tk === 'all') { clearHi(); return; }
+        nodeEls.forEach((g) => { const n = (g as any)._n as N; g.classList.toggle('dim', n.track !== tk); });
+        lineEls.forEach((ln) => { const l = (ln as any)._l as L; const a = byId.get(l.source)!, b = byId.get(l.target)!; const on = a.track === tk || b.track === tk; ln.classList.toggle('dim', !on); ln.classList.toggle('hot', on && (a.track === tk && b.track === tk)); });
+      });
+    });
+  }
+</script>
