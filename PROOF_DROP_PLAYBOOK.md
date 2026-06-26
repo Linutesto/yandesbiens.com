@@ -35,6 +35,12 @@ This creates (as drafts):
 - `src/content/blog/<slug>.md` — proof-drop post, frontmatter wired (`track`, `proofDrop`, `ogImage`)
 - `src/content/newsletter/<NNN>-<slug>.md` — newsletter issue (auto-incremented number)
 - `scripts/drafts/<slug>.md` — X / LinkedIn / Reddit drafts
+- `scripts/drafts/<slug>.publication.ts.txt` — citable record to paste into `src/data/publications.ts`
+  (auto-flows to `/cite`, the post's Cite block, `/status`, `/timeline`)
+- `scripts/drafts/<slug>.release.md` — GitHub release notes draft
+
+For versioning + DOI minting, see **RELEASE_CHECKLIST.md**. For the SR&ED evidence trail,
+add an entry to **docs/sred/RESEARCH_LOG.md** (one per investigation).
 
 ## Then (the checklist the script prints)
 

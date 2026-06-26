@@ -1,0 +1,100 @@
+---
+import Base from '../layouts/Base.astro';
+import Subscribe from '../components/Subscribe.astro';
+import { timeline, type MStatus } from '../data/timeline';
+import { tracks } from '../data/tracks';
+
+const statusCls: Record<MStatus, string> = {
+  active: 's-active', shipped: 's-shipped', benchmarked: 's-bench', evolved: 's-evolved', archived: 's-arch',
+};
+---
+<Base
+  title="timeline — Yan Desbiens · Éthiqueia"
+  description="How the research program evolved: from chaos experiments to fractal cognition to benchmarked memory systems. Where each idea came from, what replaced it, what's still active."
+>
+  <p class="prompt">
+    <b>yan@yandesbiens</b>:<span class="path">~</span>$ <span class="cmd">git log --oneline --since=2023 --reverse</span>
+  </p>
+
+  <header class="thead">
+    <h1>Evolution of the program</h1>
+    <p class="sub">
+      One program, traced honestly. Where each idea came from, what it solved, what replaced it,
+      and what's still active. The throughline: <span class="green">structure can emerge from
+      chaos if you let it loop</span> — which became fractals, self-organizing memory, and
+      local-first execution.
+    </p>
+  </header>
+
+  {timeline.map((era) => (
+    <section class="era">
+      <div class="era-head">
+        <span class="year">{era.year}</span>
+        <h2>{era.label}</h2>
+      </div>
+      <p class="era-sum">{era.summary}</p>
+      <ul class="stream">
+        {era.milestones.map((m) => (
+          <li class="node">
+            <span class="dot"></span>
+            <div class="m">
+              <div class="m-top">
+                <span class="m-title">{m.title}</span>
+                <span class:list={['mstatus', statusCls[m.status]]}>{m.status}</span>
+                {m.track && <span class="m-track" style={`color:${tracks[m.track].accent}`}>{tracks[m.track].label}</span>}
+              </div>
+              <p class="m-detail">{m.detail}</p>
+              {m.replacedBy && <p class="m-repl">↳ evolved into: {m.replacedBy}</p>}
+              {m.links && (
+                <p class="m-links">
+                  {m.links.map((l, i) => (
+                    <>{i > 0 && ' · '}<a href={l.href} target={l.href.startsWith('http') ? '_blank' : undefined} rel="noopener">{l.label}</a></>
+                  ))}
+                </p>
+              )}
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+  ))}
+
+  <p class="legend">
+    <span class="mstatus s-active">active</span><span class="mstatus s-bench">benchmarked</span>
+    <span class="mstatus s-shipped">shipped</span><span class="mstatus s-evolved">evolved</span>
+    <span class="mstatus s-arch">archived</span>
+  </p>
+
+  <Subscribe variant="page" src="timeline" heading="Watch the next chapter."
+    blurb="The program advances by proof drop. Subscribe to follow where it goes next." />
+
+  <p class="more"><a href="/research">→ research program</a> · <a href="/status">→ lab status</a></p>
+</Base>
+
+<style>
+  .thead h1 { color: var(--green); font-size: 26px; text-shadow: var(--glow-green); margin: 6px 0; }
+  .sub { color: var(--text); max-width: 72ch; }
+  .era { margin: 30px 0; }
+  .era-head { display: flex; align-items: baseline; gap: 12px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+  .era-head .year { color: var(--pink); font-weight: 700; font-size: 20px; }
+  .era-head h2 { margin: 0; color: var(--green); font-size: 18px; }
+  .era-sum { color: var(--muted); max-width: 74ch; margin: 10px 0 14px; }
+  .stream { list-style: none; margin: 0; padding: 0 0 0 6px; }
+  .node { position: relative; padding: 0 0 18px 22px; border-left: 1px solid var(--border); }
+  .node:last-child { border-left-color: transparent; }
+  .dot { position: absolute; left: -5px; top: 4px; width: 9px; height: 9px; border-radius: 50%; background: var(--green); box-shadow: var(--glow-green); }
+  .m-top { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .m-title { color: var(--text); font-weight: 700; }
+  .m-track { font-size: 12px; }
+  .m-detail { color: var(--muted); font-size: 13.5px; margin: 4px 0; max-width: 74ch; }
+  .m-repl { color: var(--amber); font-size: 12.5px; margin: 2px 0; }
+  .m-links { font-size: 13px; margin: 4px 0 0; }
+  .mstatus { font-size: 11px; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--border); }
+  .s-active { color: var(--green); border-color: var(--green-dim); }
+  .s-bench { color: #1a0014; background: var(--pink); border-color: var(--pink); font-weight: 700; }
+  .s-shipped { color: var(--green); }
+  .s-evolved { color: var(--amber); border-color: #6b551f; }
+  .s-arch { color: var(--muted); }
+  .legend { display: flex; gap: 6px; flex-wrap: wrap; margin: 20px 0; }
+  .more { margin-top: 26px; }
+</style>

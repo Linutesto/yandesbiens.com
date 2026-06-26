@@ -154,14 +154,64 @@ Title: TODO
 Body: setup, table, takeaways incl. failure case, one-command repro.
 `);
 
+// Citable publication record — paste into src/data/publications.ts
+const pubId = `desbiens${today.slice(0, 4)}${slug.replace(/[^a-z0-9]/gi, '')}`;
+write(join(ROOT, 'scripts/drafts', `${slug}.publication.ts.txt`), `// → paste into the publications[] array in src/data/publications.ts
+{
+  id: '${pubId}',
+  slug: '${slug}',
+  title: '${title}',
+  shortTitle: '${title}',
+  authors: ['Yan Desbiens'],
+  date: '${today}',
+  type: 'benchmark',
+  track: '${track}',
+  version: 'v0.1.0',
+  repo: 'https://github.com/Linutesto/TODO',
+  url: 'https://yandesbiens.com/blog/${slug}/',
+  artifacts: [
+    { label: 'Code + one-command repro', href: 'https://github.com/Linutesto/TODO' },
+  ],
+  abstract: 'TODO: 3-4 sentence abstract — claim, method, result, honest limitation.',
+  doi: null, // mint via Zenodo on release (see RELEASE_CHECKLIST.md), then fill
+  reproducible: true,
+},
+`);
+
+// GitHub release notes draft
+write(join(ROOT, 'scripts/drafts', `${slug}.release.md`), `# Release — ${title}
+
+**Proof drop** · track: ${track} · ${today}
+
+## Summary
+TODO: one paragraph — what shipped and the headline result.
+
+## Evidence
+- Benchmark: /blog/${slug}/
+- Repro: \`cd benchmarks && ./run.sh\`
+- Figures + logs: results/
+
+## Honest limitations
+- TODO
+
+## Cite
+See CITATION.cff in this repo, or https://yandesbiens.com/cite/ (id: ${pubId}).
+
+## DOI
+Mint via Zenodo on tag (see RELEASE_CHECKLIST.md), then update CITATION.cff + publications.ts.
+`);
+
 console.log('\nCreated:');
 wrote.forEach((w) => console.log('  + ' + w));
 console.log(`\nPublish checklist for "${title}" (issue #${issue}):`);
 console.log(`  1. drop figures into  public/img/${slug}/`);
 console.log(`  2. write the post + newsletter (remove "draft: true" when ready)`);
-console.log(`  3. add "${slug}" to the matching thread's posts[] in src/data/research.ts`);
-console.log(`  4. bump that thread's maturity/evidence in src/data/research.ts + RESEARCH_PROGRAM.md`);
-console.log(`  5. (optional) add a /projects entry or update one in src/data/projects.ts`);
-console.log(`  6. npm run build  → verify /blog/${slug}/, /newsletter/, rss.xml, rss/benchmarks.xml`);
-console.log(`  7. deploy: npx wrangler pages deploy ./dist --project-name yandesbiens`);
-console.log(`  8. post the drafts in scripts/drafts/${slug}.md\n`);
+console.log(`  3. paste scripts/drafts/${slug}.publication.ts.txt into src/data/publications.ts`);
+console.log(`     (this auto-flows to /cite, the post's Cite block, /status, /timeline)`);
+console.log(`  4. add "${slug}" to the matching thread's posts[] in src/data/research.ts`);
+console.log(`  5. bump that thread's maturity/evidence in src/data/research.ts + RESEARCH_PROGRAM.md`);
+console.log(`  6. (optional) add a /projects entry + a /timeline milestone (src/data/timeline.ts)`);
+console.log(`  7. npm run build  → verify /blog/${slug}/, /cite/, /status/, rss/benchmarks.xml`);
+console.log(`  8. deploy: npx wrangler pages deploy ./dist --project-name yandesbiens --branch main`);
+console.log(`  9. GitHub release: use scripts/drafts/${slug}.release.md (see RELEASE_CHECKLIST.md for DOI)`);
+console.log(` 10. post the social drafts in scripts/drafts/${slug}.md\n`);
