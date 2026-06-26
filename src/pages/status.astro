@@ -1,0 +1,136 @@
+---
+import Base from '../layouts/Base.astro';
+import Subscribe from '../components/Subscribe.astro';
+import { threads, THESIS, maturityRank, type Maturity } from '../data/research';
+import { tracks } from '../data/tracks';
+import { publications } from '../data/publications';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog')).filter((p) => !p.data.draft);
+const issues = (await getCollection('newsletter')).filter((i) => !i.data.draft);
+
+const latest = [...publications].sort((a, b) => b.date.localeCompare(a.date))[0];
+const reproCount = publications.filter((p) => p.reproducible).length;
+
+const matCls: Record<Maturity, string> = {
+  concept: 'm-concept', prototype: 'm-proto', shipped: 'm-shipped', benchmarked: 'm-bench', published: 'm-pub',
+};
+
+// honest maturity rollup
+const sortedThreads = [...threads].sort((a, b) => maturityRank[b.maturity] - maturityRank[a.maturity]);
+
+const repos = [
+  { name: 'ufm', href: 'https://github.com/Linutesto/ufm', note: 'Unified Fractal Memory · v0.1.1 · benchmarked' },
+  { name: 'fmm', href: 'https://github.com/Linutesto/fmm', note: 'Fractal Memory · v0.1.0 · shipped' },
+];
+
+const stat = (n: number | string, label: string) => ({ n, label });
+const stats = [
+  stat(publications.length, 'citable outputs'),
+  stat(reproCount, 'reproducible'),
+  stat(threads.length, 'research threads'),
+  stat(posts.length, 'articles'),
+  stat(issues.length, 'newsletter issues'),
+  stat(repos.length, 'open repos'),
+];
+---
+<Base
+  title="lab status — Yan Desbiens · Éthiqueia"
+  description="Live state of the Éthiqueia research program: latest proof drop, thread maturity, evidence status, next proofs, and repositories."
+>
+  <p class="prompt">
+    <b>yan@yandesbiens</b>:<span class="path">~</span>$ <span class="cmd">./lab --status</span>
+  </p>
+
+  <header class="shead">
+    <h1>Lab status</h1>
+    <p class="sub">A single, honest snapshot of where the program stands. {THESIS}</p>
+  </header>
+
+  <div class="stats">
+    {stats.map((s) => (
+      <div class="stat"><span class="n">{s.n}</span><span class="l">{s.label}</span></div>
+    ))}
+  </div>
+
+  <h2 class="sec">// latest proof drop</h2>
+  {latest ? (
+    <div class="latest">
+      <a class="lt-title" href={latest.url}>{latest.title}</a>
+      <p class="lt-meta">
+        {latest.date} · <span style={`color:${tracks[latest.track].accent}`}>{tracks[latest.track].label}</span>
+        {latest.reproducible && <span class="repro">reproducible</span>}
+      </p>
+      <p class="lt-abs">{latest.abstract}</p>
+      <p class="lt-links">
+        <a href={latest.url}>read →</a> · <a href="/cite">cite</a>
+        {latest.repo && <> · <a href={latest.repo} target="_blank" rel="noopener">repo ↗</a></>}
+      </p>
+    </div>
+  ) : <p class="muted"># no proof drops yet.</p>}
+
+  <h2 class="sec">// research threads — maturity & evidence</h2>
+  <div class="table">
+    <div class="trow head">
+      <span>thread</span><span>maturity</span><span>evidence</span><span>next proof</span>
+    </div>
+    {sortedThreads.map((t) => (
+      <div class="trow">
+        <span class="th"><a href={`/research#${t.track}`} style={`color:${tracks[t.track].accent}`}>{tracks[t.track].label}</a></span>
+        <span><span class:list={['mbadge', matCls[t.maturity]]}>{t.maturity}</span></span>
+        <span class="ev">{t.evidence}</span>
+        <span class="np">{t.nextProof}</span>
+      </div>
+    ))}
+  </div>
+
+  <h2 class="sec">// repositories</h2>
+  <ul class="repos">
+    {repos.map((r) => (
+      <li>
+        <a href={r.href} target="_blank" rel="noopener">{r.name} ↗</a>
+        <span class="rn">{r.note}</span>
+      </li>
+    ))}
+  </ul>
+
+  <h2 class="sec">// what's next</h2>
+  <p class="muted">The next proof for each thread is in the table above. New outputs ship as proof drops — verifiable first, announced second.</p>
+
+  <Subscribe variant="page" src="status" heading="Track the program."
+    blurb="Get each proof drop as it ships. Reproducible, no hype." />
+
+  <p class="more"><a href="/research">→ full research program</a> · <a href="/cite">→ citations</a></p>
+</Base>
+
+<style>
+  .shead h1 { color: var(--green); font-size: 26px; text-shadow: var(--glow-green); margin: 6px 0; }
+  .sub { color: var(--text); max-width: 72ch; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin: 22px 0; }
+  .stat { border: 1px solid var(--border); border-radius: 8px; background: var(--bg-soft); padding: 12px 14px; }
+  .stat .n { display: block; color: var(--green); font-size: 24px; font-weight: 700; text-shadow: var(--glow-green); }
+  .stat .l { color: var(--muted); font-size: 12px; }
+  .sec { color: var(--pink); margin: 30px 0 10px; font-size: 15px; }
+  .latest { border: 1px solid var(--border); border-left: 2px solid var(--pink); border-radius: 8px; background: var(--bg-soft); padding: 14px 16px; }
+  .lt-title { color: var(--green); font-size: 17px; }
+  .lt-meta { color: var(--muted); font-size: 12.5px; margin: 4px 0; display: flex; gap: 8px; align-items: center; }
+  .repro { font-size: 11px; color: #1a0014; background: var(--green); border-radius: 999px; padding: 1px 8px; font-weight: 700; }
+  .lt-abs { color: var(--text); font-size: 13.5px; max-width: 74ch; }
+  .lt-links { font-size: 13px; }
+  .table { display: flex; flex-direction: column; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+  .trow { display: grid; grid-template-columns: 1.1fr 0.8fr 2fr 2fr; gap: 12px; padding: 10px 12px; border-top: 1px solid var(--border); font-size: 13px; }
+  .trow.head { background: #ffffff06; color: var(--green-dim); text-transform: uppercase; font-size: 11px; letter-spacing: 1px; border-top: none; }
+  .trow .ev { color: var(--muted); }
+  .trow .np { color: var(--pink-soft); }
+  .mbadge { font-size: 11px; padding: 2px 7px; border-radius: 999px; border: 1px solid var(--border); }
+  .m-concept { color: var(--muted); }
+  .m-proto { color: var(--amber); border-color: #6b551f; }
+  .m-shipped { color: var(--green); border-color: var(--green-dim); }
+  .m-bench { color: #1a0014; background: var(--pink); border-color: var(--pink); font-weight: 700; }
+  .m-pub { color: var(--pink-soft); border-color: var(--pink); }
+  .repos { list-style: none; padding: 0; margin: 0; }
+  .repos li { padding: 8px 0; border-bottom: 1px solid var(--border); display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap; }
+  .repos .rn { color: var(--muted); font-size: 13px; }
+  .more { margin-top: 28px; }
+  @media (max-width: 640px) { .trow { grid-template-columns: 1fr; gap: 4px; } .trow.head { display: none; } }
+</style>
