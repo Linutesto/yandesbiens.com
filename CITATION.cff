@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you reference the Éthiqueia research program, please cite it as below."
+title: "Éthiqueia — independent AI research"
+abstract: >-
+  An independent AI research program by Yan Desbiens, conducted at Éthiqueia
+  Québec inc.: capable AI you can own, on commodity hardware, through
+  self-similar architecture and memory that organizes itself. Research is
+  published as reproducible proof drops with open implementations.
+type: software
+authors:
+  - family-names: Desbiens
+    given-names: Yan
+    affiliation: "Éthiqueia Québec inc."
+    # orcid: "https://orcid.org/0000-0000-0000-0000"  # add when available
+license: MIT
+url: "https://yandesbiens.com"
+repository-code: "https://github.com/Linutesto"
+keywords:
+  - local-first-ai
+  - reproducible-research
+  - memory-systems
+  - cognitive-architectures
+  - benchmarks

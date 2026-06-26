@@ -1,9 +1,11 @@
 ---
 import Base from '../../layouts/Base.astro';
 import Subscribe from '../../components/Subscribe.astro';
+import Cite from '../../components/Cite.astro';
 import { getCollection, render } from 'astro:content';
 import { tracks } from '../../data/tracks';
 import { SITE } from '../../data/site';
+import { getPublicationBySlug } from '../../data/publications';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
@@ -16,6 +18,7 @@ export async function getStaticPaths() {
 const { post } = Astro.props;
 const { Content } = await render(post);
 const track = post.data.track ? tracks[post.data.track] : null;
+const pub = getPublicationBySlug(post.id);
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -59,6 +62,8 @@ const jsonLd = {
       <Content />
     </div>
   </article>
+
+  {pub && <Cite pub={pub} />}
 
   <Subscribe variant="page" src={`blog-${post.id}`}
     heading="Get the next proof drop."

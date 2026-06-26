@@ -1,0 +1,59 @@
+---
+// "Cite this" block for a citable publication. Renders APA + copyable BibTeX.
+import type { Publication } from '../data/publications';
+import { toBibTeX, toAPA } from '../data/cite';
+interface Props { pub: Publication }
+const { pub } = Astro.props;
+const bibtex = toBibTeX(pub);
+const apa = toAPA(pub);
+---
+<section class="cite">
+  <div class="cite-head">
+    <h3>// cite this</h3>
+    {pub.reproducible && <span class="repro">reproducible</span>}
+    {pub.doi ? <span class="doi">DOI {pub.doi}</span> : <span class="doi pending">DOI pending</span>}
+  </div>
+  <p class="apa">{apa}</p>
+  <div class="bib">
+    <button class="copy" type="button" data-clip={bibtex}>copy BibTeX</button>
+    <pre><code>{bibtex}</code></pre>
+  </div>
+  <p class="fine">
+    Full citation registry on the <a href="/cite">citations page</a>.
+    {pub.repo && <> · <a href={pub.repo} target="_blank" rel="noopener">repository ↗</a></>}
+  </p>
+</section>
+
+<style>
+  .cite {
+    border: 1px solid var(--border); border-left: 2px solid var(--green-dim);
+    border-radius: 8px; background: var(--bg-soft); padding: 14px 16px; margin: 26px 0;
+  }
+  .cite-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .cite-head h3 { color: var(--green); margin: 0; font-size: 15px; }
+  .repro { font-size: 11px; color: #1a0014; background: var(--green); border-radius: 999px; padding: 1px 8px; font-weight: 700; }
+  .doi { font-size: 11px; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 1px 8px; }
+  .doi.pending { color: var(--amber); }
+  .apa { color: var(--text); font-size: 13.5px; margin: 10px 0; }
+  .bib { position: relative; }
+  .bib pre { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 12px; overflow-x: auto; font-size: 12.5px; }
+  .copy {
+    position: absolute; top: 8px; right: 8px; z-index: 2;
+    background: var(--pink); color: #1a0014; border: none; border-radius: 5px;
+    padding: 4px 10px; font-family: var(--mono); font-size: 11px; font-weight: 700; cursor: pointer;
+  }
+  .copy:hover { box-shadow: var(--glow-pink); }
+  .fine { color: var(--muted); font-size: 12px; margin: 8px 0 0; }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('.copy').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(btn.dataset.clip || '');
+        const t = btn.textContent; btn.textContent = 'copied ✓';
+        setTimeout(() => (btn.textContent = t), 1600);
+      } catch { /* clipboard blocked; the text is visible anyway */ }
+    });
+  });
+</script>
