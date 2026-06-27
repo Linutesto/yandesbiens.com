@@ -105,12 +105,16 @@ export const timeline: Era[] = [
     milestones: [
       {
         when: '2026-06',
-        title: 'FMM extracted as a library',
+        title: 'FMM extracted, then benchmarked (Proof Drop #2)',
         track: 'memory',
-        status: 'shipped',
+        status: 'benchmarked',
         detail:
-          'The Fractal Memory idea — reinvented across four projects — pulled out into a standalone, MIT-licensed library.',
-        links: [{ label: 'fmm ↗', href: 'https://github.com/Linutesto/fmm' }],
+          'The Fractal Memory idea — reinvented across four projects — pulled into a standalone library, then given topic-scoped retrieval and benchmarked: ~164× faster and ~3.7× more accurate than flat search at 128k items when the topic is known; recall 0.0 if misrouted. The locality bet, in semantic memory.',
+        links: [
+          { label: 'benchmark →', href: '/blog/fmm-benchmark/' },
+          { label: 'cite', href: '/cite/' },
+          { label: 'fmm ↗', href: 'https://github.com/Linutesto/fmm' },
+        ],
       },
       {
         when: '2026-06',

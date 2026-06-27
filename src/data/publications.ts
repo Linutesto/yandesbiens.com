@@ -32,6 +32,28 @@ export const ORG = 'Éthiqueia Québec inc.';
 
 export const publications: Publication[] = [
   {
+    id: 'desbiens2026fmm',
+    slug: 'fmm-benchmark',
+    title:
+      'Hierarchical scoping beats flat semantic search: topic-scoped retrieval in Fractal Memory',
+    shortTitle: 'FMM Benchmark (Proof Drop #2)',
+    authors: ['Yan Desbiens'],
+    date: '2026-06-27',
+    type: 'benchmark',
+    track: 'memory',
+    version: 'v0.2.0',
+    repo: 'https://github.com/Linutesto/fmm',
+    url: 'https://yandesbiens.com/blog/fmm-benchmark/',
+    artifacts: [
+      { label: 'Code + one-command repro', href: 'https://github.com/Linutesto/fmm/tree/master/benchmarks' },
+      { label: 'Figures', href: '/img/fmm/recall.png' },
+    ],
+    abstract:
+      'We benchmark topic-scoped retrieval against a flat scan in Fractal Memory (FMM) on a synthetic hierarchical corpus (16 domains x 8 subtopics). As the store grows to 128k items, a flat vector scan degrades on both axes: latency rises ~linearly (8.3 ms) and recall@k falls (0.48 to 0.155) as cross-topic distractors accumulate. Restricting search to the query\'s subtree is sublinear and removes distractors: leaf-scoped retrieval is ~164x faster and ~3.7x more accurate than flat at 128k. The cost is strict: a misrouted scope (wrong topic) has recall 0.0. Hierarchical memory is a bet on routing locality — it pays only when the correct region can be addressed, making the topic router the next thing to measure. Embeddings are synthetic; the claim is the relative advantage and scaling trend.',
+    doi: null,
+    reproducible: true,
+  },
+  {
     id: 'desbiens2026ufm',
     slug: 'ufm-benchmark',
     title:

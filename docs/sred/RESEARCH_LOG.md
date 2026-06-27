@@ -58,6 +58,39 @@ SR&ED advisor scope eligibility later.
 
 ---
 
+## Entry 2026-002 — FMM: does hierarchical scoping improve retrieval over flat search?
+
+- **Track:** Memory Systems · **Personnel:** Yan Desbiens · **Period:** 2026-06 (capability + benchmark)
+- **Technological objective:** Determine whether organizing agent memory as a topic hierarchy
+  and restricting retrieval to the relevant subtree ("paging the region") improves retrieval
+  over a flat vector scan — and to build the capability needed to measure it.
+- **Technological uncertainty:** It was not known whether hierarchical scoping helps *recall*
+  (vs. only latency), or how the flat baseline degrades with scale. Naively, a flat semantic
+  index is assumed adequate; whether topic locality yields a both-axes win, and the size of the
+  penalty when the scope is wrong, were unknown.
+- **Hypotheses / approaches:**
+  1. Scoped search is sublinear (≈ N/scope faster) — expected.
+  2. Scoped search also improves recall by removing cross-topic distractors — uncertain.
+  3. A misrouted scope should fail hard — needed as a control to bound the claim.
+- **Systematic work performed:** Added topic-scoped retrieval to the FMM library
+  (`FractalMemoryMatrix.retrieve(query, topic_prefix=…)`, v0.2.0) — the capability did not exist
+  and was required to obtain the evidence. Built a reproducible harness (`fmm/benchmarks/`) with
+  a synthetic hierarchical corpus, sweeping N from 2k→128k across flat / domain-scoped /
+  leaf-scoped / misrouted modes, measuring median latency and recall@k, plus a library
+  correctness check (scoped retrieve stays inside the subtree).
+- **Results & conclusions (measured, CPU):**
+  - Flat scan degrades on both axes with scale: latency ~linear (8.3 ms at 128k), recall falls
+    0.48→0.155 (distractor accumulation).
+  - Leaf-scoped retrieval at 128k: **0.05 ms (~164× faster) and recall 0.58 (~3.7× higher)**.
+  - Misrouted scope: **recall 0.0** — scoping is a bet on routing locality.
+  - **Conclusion:** hierarchical scoping improves retrieval on both latency and recall when the
+    topic is known; the resolved uncertainty is that the benefit is conditional on correct
+    routing, which redirects the next investigation to the topic router.
+- **Evidence:** repo `Linutesto/fmm` (v0.2.0), `benchmarks/results/` (summary.json, figures),
+  blog `/blog/fmm-benchmark/`, citation id `desbiens2026fmm`.
+
+---
+
 ## Entry template (copy for each new investigation)
 
 ```

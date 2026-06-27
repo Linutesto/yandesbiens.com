@@ -44,8 +44,8 @@ export const threads: Thread[] = [
     evidence:
       'Proof drop #1 (2026-06-27): runs a 24 GB expert bank on a 23.5 GB RTX 4090 where baseline OOMs; within ~1% of baseline throughput when the working set fits the budget; ~240× faster than naive offload; honest no-locality failure case documented and reproducible.',
     nextProof:
-      'Training-time paging (autograd-safe) + OffloadedAdam memory curves; cost-aware eviction vs. LRU ablation; bf16 + an NVMe tier.',
-    posts: ['ufm-benchmark'],
+      'A learned topic router measured end-to-end (scoping only pays when routing is right — see proof drop #2). Plus: training-time paging (autograd-safe) + OffloadedAdam memory curves; real-embedding retrieval corpora.',
+    posts: ['ufm-benchmark', 'fmm-benchmark'],
   },
   {
     track: 'cognition',
