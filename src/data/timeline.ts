@@ -105,6 +105,19 @@ export const timeline: Era[] = [
     milestones: [
       {
         when: '2026-06',
+        title: 'Centroid router benchmarked (Proof Drop #3)',
+        track: 'memory',
+        status: 'benchmarked',
+        detail:
+          'Fired proof drop #2\'s oracle and bolted on the cheapest router that could work — one centroid per topic. When memory is separable it\'s nearly free (~0.002 ms/query) and recovers 98% of oracle recall at ~60× flat-scan speed; as topics overlap, realized recall tracks routing accuracy and collapses toward chance. The catch: proof drop #2 ran in exactly that hard regime, so its oracle win was real but uncashable by a trivial router. Routing quality gates the locality bet. Shipped route() in fmm v0.3.0.',
+        links: [
+          { label: 'benchmark →', href: '/blog/fmm-router/' },
+          { label: 'cite', href: '/cite/' },
+          { label: 'fmm ↗', href: 'https://github.com/Linutesto/fmm' },
+        ],
+      },
+      {
+        when: '2026-06',
         title: 'FMM extracted, then benchmarked (Proof Drop #2)',
         track: 'memory',
         status: 'benchmarked',

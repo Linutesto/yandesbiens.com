@@ -1,0 +1,20 @@
+// → paste into the publications[] array in src/data/publications.ts
+{
+  id: 'desbiens2026fmmrouter',
+  slug: 'fmm-router',
+  title: 'proof drop #3 — a cheap router decides whether the locality bet pays',
+  shortTitle: 'proof drop #3 — a cheap router decides whether the locality bet pays',
+  authors: ['Yan Desbiens'],
+  date: '2026-06-27',
+  type: 'benchmark',
+  track: 'memory',
+  version: 'v0.1.0',
+  repo: 'https://github.com/Linutesto/TODO',
+  url: 'https://yandesbiens.com/blog/fmm-router/',
+  artifacts: [
+    { label: 'Code + one-command repro', href: 'https://github.com/Linutesto/TODO' },
+  ],
+  abstract: 'TODO: 3-4 sentence abstract — claim, method, result, honest limitation.',
+  doi: null, // mint via Zenodo on release (see RELEASE_CHECKLIST.md), then fill
+  reproducible: true,
+},

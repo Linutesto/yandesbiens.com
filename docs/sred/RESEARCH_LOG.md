@@ -91,6 +91,51 @@ SR&ED advisor scope eligibility later.
 
 ---
 
+## Entry 2026-003 — FMM: can a low-cost router realize the scoping benefit without an oracle?
+
+- **Track:** Memory Systems · **Personnel:** Yan Desbiens · **Period:** 2026-06 (capability + benchmark)
+- **Technological objective:** Determine whether a cheap, training-free router can select the
+  correct memory subtree at query time well enough to realize the scoped-retrieval benefit
+  measured in Entry 2026-002 — which assumed an oracle — and to build the routing capability
+  needed to measure it.
+- **Technological uncertainty:** Entry 2026-002 showed scoping helps *iff* the topic is known and
+  that a misrouted scope has recall 0.0, but left open whether any low-cost router could pick the
+  scope reliably in practice, and under what conditions it would fail. It was not known (a) how
+  accurately a per-subtree centroid (a descriptor the store already holds, no training) routes
+  queries, (b) how end-to-end recall depends on routing accuracy, or (c) where the method breaks
+  as topics become less separable. The relationship between memory organization and realized
+  retrieval quality was unquantified.
+- **Hypotheses / approaches:**
+  1. A nearest-centroid router is near-free (cost independent of store size) — expected.
+  2. Realized recall is gated by routing accuracy, not retrieval — uncertain.
+  3. Widening to the top-r subtrees trades a little scope for routing robustness — uncertain.
+  4. Separability (cluster scatter) is the controlling variable for whether routing succeeds —
+     hypothesis tested by sweeping it; needed to bound the claim from 2026-002.
+- **Systematic work performed:** Added a centroid router to the FMM library
+  (`FractalMemoryMatrix.route()` / `.route_and_retrieve()` / `.topic_centroids()`, v0.3.0) — the
+  capability did not exist and was required to obtain the evidence. Built a reproducible harness
+  (`fmm/benchmarks/run_router_benchmark.py`) on the same synthetic hierarchy as 2026-002, with two
+  sweeps — separability (cluster scatter ε at fixed N) and size (N at a fixed ε) — comparing flat /
+  oracle / router-top1 / router-top3 on median latency, realized recall@k, and routing accuracy,
+  plus a library correctness check (shipped `route()` selects the right subtree and stays in scope).
+- **Results & conclusions (measured, CPU, 16 threads):**
+  - Separable topics, 128k items: router decision ≈ **0.002 ms/query** (~4000× cheaper than the
+    8.0 ms flat scan). Top-3 router recovers **98% of oracle recall (0.965 vs 0.985) at ~60×**
+    flat speed; top-1 is **~159×** faster at 92%.
+  - As topics overlap (ε swept 0.05→0.45), realized recall falls along a continuous curve that
+    **tracks routing accuracy** — from the oracle ceiling toward chance (top-1 routing accuracy
+    0.07 at ε=0.45). Top-r widening partially recovers it (e.g. ε=0.15: 0.64→0.79).
+  - **Conclusion:** the resolved uncertainty is that a free centroid router cashes the scoping
+    benefit *when memory is separable*, and that realized recall is gated by routing accuracy
+    rather than retrieval. Notably, Entry 2026-002 ran at ε=0.45 — precisely the regime where this
+    router routes at ~7% — so that benchmark's oracle advantage, while real, is uncashable by a
+    trivial router. This redirects the next investigation to a learned router that extends the
+    operating regime.
+- **Evidence:** repo `Linutesto/fmm` (v0.3.0), `benchmarks/results/` (router_summary.json,
+  fig_router_*.png), blog `/blog/fmm-router/`, citation id `desbiens2026fmmrouter`.
+
+---
+
 ## Entry template (copy for each new investigation)
 
 ```

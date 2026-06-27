@@ -32,6 +32,28 @@ export const ORG = 'Éthiqueia Québec inc.';
 
 export const publications: Publication[] = [
   {
+    id: 'desbiens2026fmmrouter',
+    slug: 'fmm-router',
+    title:
+      'Does a cheap router cash the locality bet? Centroid routing for topic-scoped memory',
+    shortTitle: 'FMM Router (Proof Drop #3)',
+    authors: ['Yan Desbiens'],
+    date: '2026-06-27',
+    type: 'benchmark',
+    track: 'memory',
+    version: 'v0.3.0',
+    repo: 'https://github.com/Linutesto/fmm',
+    url: 'https://yandesbiens.com/blog/fmm-router/',
+    artifacts: [
+      { label: 'Code + one-command repro', href: 'https://github.com/Linutesto/fmm/tree/master/benchmarks' },
+      { label: 'Figures', href: '/img/fmm-router/separability.png' },
+    ],
+    abstract:
+      'Topic-scoped retrieval (Proof Drop #2) wins decisively when the topic is known, but production has no oracle: a router must pick the scope. We replace the oracle with the cheapest router that could work — one centroid per topic subtree (the mean of its items, already held by the store) — and measure end-to-end retrieval in Fractal Memory (FMM) on the same synthetic hierarchy (16 domains x 8 subtopics, dim 128). When topics are separable, the router is nearly free (~0.002 ms/query, ~4000x cheaper than the 8 ms flat scan it replaces) and cashes the win: at 128k items a top-3 centroid router recovers 98% of the oracle recall (0.965 vs 0.985) while staying ~60x faster than flat; top-1 is ~159x faster at 92%. As topics overlap, realized recall falls along a continuous curve that tracks routing accuracy — from the oracle ceiling toward chance (top-1 routing accuracy 0.07 at high overlap). The tie-back: Proof Drop #2 ran at exactly that high-overlap regime, so its oracle advantage, though real, was uncashable by a trivial router. Routing quality gates the locality bet; a learned router is the next proof. Embeddings are synthetic; the claim is the shape (routing accuracy gates realized recall) and that centroid routing is essentially free.',
+    doi: null,
+    reproducible: true,
+  },
+  {
     id: 'desbiens2026fmm',
     slug: 'fmm-benchmark',
     title:
