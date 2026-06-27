@@ -12,15 +12,15 @@ export type Project = {
 
 export const projects: Project[] = [
   {
-    slug: 'hermes',
-    name: 'Hermes / NeuroArch',
-    tagline: 'a self-evolving cognitive architecture',
-    desc: 'An autonomous reasoning system that thinks while idle, routes work across dozens of local models, and rewrites its own beliefs.',
+    slug: 'neuroarch',
+    name: 'NeuroArch',
+    tagline: 'a cognitive architecture that runs between prompts',
+    desc: 'The lab\'s cognitive-architecture thread: background cognition cycles — idle reasoning, belief recalibration, and memory crystallization — layered on a competent local agent.',
     body: [
-      "Hermes is the project I keep coming back to: a cognitive architecture that doesn't just answer prompts — it runs. It thinks in the background, keeps a persistent memory, and slowly reorganizes what it believes about the world.",
+      "NeuroArch is the cognitive-architecture direction of the lab: a system that doesn't just answer prompts but keeps reasoning when nobody is watching. Persistent memory, idle cognition, and beliefs that get revised over time.",
       "Under the hood it's a market. Dozens of local models bid on cognitive work, and a router hands tasks to whoever's best for the job. Idle cycles aren't wasted — they go into research, belief recalibration, and a dream phase that crystallizes scattered notes into durable memory.",
-      "To be precise about where it stands: Hermes is already a competent agent today — it reasons, routes, and uses tools well. NeuroArch is the layer on top of that — the idle-cognition, belief-recalibration, and dream-crystallization cycles — which it doesn't yet fully run. The work is about giving a capable agent those background cycles, not building competence from scratch.",
-      "It's the closest thing I have to a system that's actually alive between conversations.",
+      "Where it honestly stands: the underlying agent substrate is already competent today — it reasons, routes, and uses tools well. NeuroArch is the architecture on top — the idle-cognition, belief-recalibration, and dream-crystallization cycles — which it doesn't yet fully run. The research is about giving a capable agent those background cycles and then measuring them, not building competence from scratch.",
+      "It's the closest thing I have to a system that's actually alive between conversations — and the next proof needed is to make those cycles measurable: memory growth, belief-revision traces, idle-cycle throughput.",
     ],
     highlights: [
       'Idle cognition — keeps reasoning when nobody is watching',

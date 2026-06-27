@@ -1,0 +1,4 @@
+# Cognitive-architecture thread renamed Hermes -> NeuroArch (2026-06-27).
+# Keep the old project URL alive permanently.
+/projects/hermes/   /projects/neuroarch/   301
+/projects/hermes    /projects/neuroarch/   301

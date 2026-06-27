@@ -4,6 +4,7 @@ import Subscribe from '../components/Subscribe.astro';
 import { threads, THESIS, maturityRank, type Maturity } from '../data/research';
 import { tracks } from '../data/tracks';
 import { publications } from '../data/publications';
+import { lifecycle, compilerThesis } from '../data/compiler';
 import { getCollection } from 'astro:content';
 
 const posts = (await getCollection('blog')).filter((p) => !p.data.draft);
@@ -52,6 +53,23 @@ const stats = [
       <div class="stat"><span class="n">{s.n}</span><span class="l">{s.label}</span></div>
     ))}
   </div>
+
+  <h2 class="sec">// the research compiler</h2>
+  <p class="compiler-thesis">{compilerThesis}</p>
+  <ol class="pipeline">
+    {lifecycle.map((s) => (
+      <li class:list={['stage', `st-${s.status}`]}>
+        <span class="sn">{s.n}</span>
+        <span class="sname">{s.href ? <a href={s.href}>{s.name}</a> : s.name}</span>
+        <span class="ssys">{s.system}</span>
+        <span class="sst">{s.status}</span>
+      </li>
+    ))}
+  </ol>
+  <p class="muted small">
+    {lifecycle.filter((s) => s.status === 'built').length}/{lifecycle.length} stages built ·
+    the rest are the honest next-build targets (first-class hypotheses, release/DOI archive).
+  </p>
 
   <h2 class="sec">// latest proof drop</h2>
   {latest ? (
@@ -111,6 +129,20 @@ const stats = [
   .stat .n { display: block; color: var(--green); font-size: 24px; font-weight: 700; text-shadow: var(--glow-green); }
   .stat .l { color: var(--muted); font-size: 12px; }
   .sec { color: var(--pink); margin: 30px 0 10px; font-size: 15px; }
+  .compiler-thesis { color: var(--text); max-width: 74ch; font-size: 14px; border-left: 2px solid var(--pink); padding-left: 14px; }
+  .pipeline { list-style: none; margin: 14px 0 8px; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+  .stage { display: grid; grid-template-columns: 26px 130px 1fr 70px; gap: 10px; align-items: center; padding: 6px 10px; border: 1px solid var(--border); border-left-width: 3px; border-radius: 6px; background: var(--bg-soft); font-size: 12.5px; }
+  .stage .sn { color: var(--muted); }
+  .stage .sname { font-weight: 700; color: var(--text); }
+  .stage .ssys { color: var(--muted); }
+  .stage .sst { text-align: right; font-size: 11px; }
+  .st-built { border-left-color: var(--green); }
+  .st-built .sst { color: var(--green); }
+  .st-partial { border-left-color: var(--amber); }
+  .st-partial .sst { color: var(--amber); }
+  .st-gap { border-left-color: var(--pink); }
+  .st-gap .sst { color: var(--pink); }
+  @media (max-width: 620px) { .stage { grid-template-columns: 22px 1fr 56px; } .stage .ssys { display: none; } }
   .latest { border: 1px solid var(--border); border-left: 2px solid var(--pink); border-radius: 8px; background: var(--bg-soft); padding: 14px 16px; }
   .lt-title { color: var(--green); font-size: 17px; }
   .lt-meta { color: var(--muted); font-size: 12.5px; margin: 4px 0; display: flex; gap: 8px; align-items: center; }

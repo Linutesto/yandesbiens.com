@@ -127,12 +127,12 @@ export const timeline: Era[] = [
       },
       {
         when: '2026',
-        title: 'Hermes / NeuroArch',
+        title: 'NeuroArch',
         track: 'cognition',
         status: 'active',
         detail:
-          'A competent agent today; NeuroArch is the background-cognition cycle layer (idle reasoning, belief revision, crystallization) it does not yet fully run. Flagship long-term direction.',
-        links: [{ label: 'Hermes', href: '/projects/hermes/' }],
+          'The cognitive-architecture thread. A competent agent substrate today; NeuroArch is the background-cognition layer (idle reasoning, belief revision, crystallization) it does not yet fully run. Flagship long-term direction — next proof: make the cycles measurable.',
+        links: [{ label: 'NeuroArch', href: '/projects/neuroarch/' }],
       },
     ],
   },

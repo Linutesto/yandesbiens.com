@@ -34,7 +34,7 @@ export const threads: Thread[] = [
   {
     track: 'memory',
     lineage:
-      'FMM (Fractal Memory Matrix / Memory-Mapped) → UFM (Unified Fractal Memory). The FMM idea independently reappeared in Fractal Neurons, QJSON Agents, fnn_test, and Hermes before being extracted; UFM generalized it from semantic memory to physical memory (VRAM/RAM as one pool).',
+      'FMM (Fractal Memory Matrix / Memory-Mapped) → UFM (Unified Fractal Memory). The FMM idea independently reappeared in Fractal Neurons, QJSON Agents, fnn_test, and NeuroArch before being extracted; UFM generalized it from semantic memory to physical memory (VRAM/RAM as one pool).',
     projects: [
       { name: 'UFM', slug: 'ufm', repo: 'https://github.com/Linutesto/ufm' },
       { name: 'FMM', repo: 'https://github.com/Linutesto/fmm' },
@@ -50,17 +50,17 @@ export const threads: Thread[] = [
   {
     track: 'cognition',
     lineage:
-      'Hermes / NeuroArch (a cognitive architecture with idle cognition and self-revising beliefs) · AEON (an AI-governed deterministic world).',
+      'NeuroArch — a cognitive architecture with idle cognition, self-revising beliefs, and memory crystallization, running on a competent local-agent substrate · AEON (an AI-governed deterministic world).',
     projects: [
       {
-        name: 'Hermes / NeuroArch',
-        slug: 'hermes',
+        name: 'NeuroArch',
+        slug: 'neuroarch',
         note:
-          'Hermes is already a competent agent today. NeuroArch is the cycle layer on top — idle cognition, belief recalibration, dream-phase crystallization — which it does not yet fully run. The thread is about giving a working agent those background cycles.',
+          'The agent substrate is already competent today. NeuroArch is the architecture on top — idle cognition, belief recalibration, dream-phase crystallization — which it does not yet fully run. The thread is about giving a working agent those background cycles and then measuring them.',
       },
       { name: 'AEON', slug: 'aeon' },
     ],
-    leadArtifact: { label: 'Hermes / NeuroArch', href: '/projects/hermes/' },
+    leadArtifact: { label: 'NeuroArch', href: '/projects/neuroarch/' },
     maturity: 'prototype',
     evidence:
       'A running system. Internal behaviors are not yet formally measured, so all capability claims are marked speculative.',

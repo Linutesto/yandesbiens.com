@@ -23,7 +23,7 @@ export const tracks: Record<TrackId, Track> = {
     id: 'cognition',
     label: 'Cognitive Architectures',
     blurb: 'Systems that keep reasoning between prompts — internal state, world models, idle cognition.',
-    covers: ['Hermes', 'NeuroArch', 'AEON', 'world models', 'idle cognition'],
+    covers: ['NeuroArch', 'AEON', 'world models', 'idle cognition', 'cognitive systems'],
     accent: 'var(--pink)',
   },
   agents: {

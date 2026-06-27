@@ -21,7 +21,7 @@ memory that actually persists, determinism where it counts.
 ## what's here
 
 - **ForgeLM** — training language models from scratch on a single card.
-- **Hermes / NeuroArch** — a cognitive architecture that evolves itself.
+- **NeuroArch** — a cognitive architecture that keeps reasoning between prompts.
 - **AEON** — a procedural world steered by a local "world-spirit".
 - **agentos** — the kernel that ties agents to tools.
 - **claude-gpt** — a terminal agentic loop driving ChatGPT-web, with prompt
