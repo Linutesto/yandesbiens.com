@@ -151,6 +151,19 @@ export const timeline: Era[] = [
           'The cognitive-architecture thread. A competent agent substrate today; NeuroArch is the background-cognition layer (idle reasoning, belief revision, crystallization) it does not yet fully run. Flagship long-term direction — next proof: make the cycles measurable.',
         links: [{ label: 'NeuroArch', href: '/projects/neuroarch/' }],
       },
+      {
+        when: '2026-06',
+        title: 'AEON: Living Worlds — open-sourced, embodied, documented',
+        track: 'cognition',
+        status: 'active',
+        detail:
+          'The world-model project went public on GitHub and grew citizens that are embodied (positions, pathfinding, perception) and driven by a teacher-to-student liquid neural network. Shipped a technical whitepaper, and a devlog tracing a trainability bug in that network to a missing normalization — fixed with a LayerNorm so the student learns reliably across seeds. Framed as engineering; emergent behavior is not yet formally measured.',
+        links: [
+          { label: 'AEON', href: '/projects/aeon/' },
+          { label: 'devlog', href: '/blog/aeon-liquid-brain-stability/' },
+          { label: 'aeon ↗', href: 'https://github.com/Linutesto/aeon-living-worlds' },
+        ],
+      },
     ],
   },
 ];

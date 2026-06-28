@@ -8,6 +8,7 @@ export type Project = {
   stack: string[];
   status: 'live' | 'wip' | 'research';
   featured?: boolean; // gets the live 3D embed
+  links?: { label: string; href: string }[]; // repo / docs / related posts
 };
 
 export const projects: Project[] = [
@@ -54,20 +55,29 @@ export const projects: Project[] = [
     slug: 'aeon',
     name: 'AEON',
     tagline: 'an AI-governed procedural world',
-    desc: 'A deterministic Python simulation steered by a local LLM "world-spirit", visualized in a Three.js dashboard.',
+    desc: 'An open-source, deterministic world simulation steered by a local LLM "world-spirit" — with embodied citizens, a teacher-to-student liquid-neural-network mind, and a Three.js dashboard.',
     body: [
       "AEON is a little world that runs itself. A deterministic Python simulation ticks forward, fully reproducible — same seed, same universe. On top of it sits a local LLM I call the world-spirit, nudging events, naming things, and giving the world a sense of intention.",
       "The trick is the balance: the model gets to be creative, but the simulation stays deterministic underneath. You can replay any moment exactly. The visual below is a live taste of that world — rendered right in your browser.",
+      "The citizens are becoming embodied: they have positions, pathfinding, and movement intents, they perceive danger and opportunity around them, and their behavior is driven by a continuous-time liquid neural network that a larger teacher model trains through a phased curriculum. It is engineering, not a claim — the emergent behavior is fascinating to watch but not yet formally measured, and I try to say so plainly.",
+      "AEON is built in the open. The architecture is written up in a technical whitepaper, and the development log tracks how it actually evolves — including the recent work that traced a trainability bug in the liquid brain to a missing normalization and fixed it. It is the world-model corner of a wider research program; the rigorously benchmarked side lives in UFM and FMM, and the whole map is on the research page.",
     ],
     highlights: [
-      'Deterministic, replayable simulation core',
-      'Local LLM "world-spirit" steering events',
+      'Deterministic, replayable simulation core — same seed, same world',
+      'Embodied citizens: positions, pathfinding, movement intents, perception',
+      'Teacher-to-student liquid neural network (CfC) with a curriculum',
+      'Local LLM "world-spirit" steering events within bounded directives',
+      'Believable city placement (collision-free, slope + density aware)',
       'Three.js dashboard, built mobile-first',
-      'Reproducible from a single seed',
     ],
-    stack: ['Python', 'Three.js', 'Ollama'],
+    stack: ['Python', 'FastAPI', 'Three.js', 'Ollama', 'liquid neural nets'],
     status: 'wip',
     featured: true,
+    links: [
+      { label: 'Source on GitHub', href: 'https://github.com/Linutesto/aeon-living-worlds' },
+      { label: 'Technical whitepaper', href: 'https://github.com/Linutesto/aeon-living-worlds/blob/main/WHITEPAPER.md' },
+      { label: 'Devlog: stabilizing the liquid brain', href: '/blog/aeon-liquid-brain-stability/' },
+    ],
   },
   {
     slug: 'agentos',

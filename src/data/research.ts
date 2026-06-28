@@ -58,15 +58,21 @@ export const threads: Thread[] = [
         note:
           'The agent substrate is already competent today. NeuroArch is the architecture on top — idle cognition, belief recalibration, dream-phase crystallization — which it does not yet fully run. The thread is about giving a working agent those background cycles and then measuring them.',
       },
-      { name: 'AEON', slug: 'aeon' },
+      {
+        name: 'AEON',
+        slug: 'aeon',
+        repo: 'https://github.com/Linutesto/aeon-living-worlds',
+        note:
+          'AI-governed deterministic world, now open-source and built in public, with embodied citizens driven by a teacher-to-student liquid neural network. Documented in a technical whitepaper and an ongoing devlog.',
+      },
     ],
     leadArtifact: { label: 'NeuroArch', href: '/projects/neuroarch/' },
     maturity: 'prototype',
     evidence:
-      'A running system. Internal behaviors are not yet formally measured, so all capability claims are marked speculative.',
+      'Running systems, documented in public. AEON is open-source with a technical whitepaper and a devlog (e.g. tracing a liquid-network trainability bug to a missing normalization and fixing it). Internal/emergent behaviors are not yet formally measured, so all capability claims stay marked speculative — this thread is framed as engineering, not results.',
     nextProof:
-      'Measurable, reproducible behaviors: memory growth over time, belief-revision traces, idle-cycle throughput — before any public capability claim.',
-    posts: [],
+      'Measurable, reproducible behaviors: memory growth over time, belief-revision traces, idle-cycle throughput, and long-run determinism/drift soak tests — before any public capability claim.',
+    posts: ['aeon-liquid-brain-stability'],
   },
   {
     track: 'agents',
