@@ -96,11 +96,12 @@ export const threads: Thread[] = [
       'byte_gpt → ForgeLM → the 4090 capacity planner / autopilot. UFM (Memory Systems) is the bridge that lets this thread scale past 24 GB.',
     projects: [{ name: 'ForgeLM', slug: 'forgelm' }],
     leadArtifact: { label: 'ForgeLM', href: '/projects/forgelm/' },
-    maturity: 'shipped',
-    evidence: 'A live, working from-scratch training stack on one consumer GPU; no public reproducible recipe doc yet.',
+    maturity: 'benchmarked',
+    evidence:
+      'Measured training envelope (VRAM, throughput, tokens/day) for the full 30M-500M family on one RTX 4090, re-verified 2026-06-29, plus a real 120M loss curve (9.65 → 2.78 over 9.04B tokens). One-command reproduce.',
     nextProof:
-      'An end-to-end reproducible run with logged loss curves, tokens/sec, and exact hardware/software versions.',
-    posts: [],
+      'Model-quality numbers from a full run — held-out perplexity and HellaSwag/ARC via `forge eval` — to put a quality axis next to the cost axis.',
+    posts: ['forgelm-4090-cost'],
   },
   {
     track: 'fractal',

@@ -32,6 +32,27 @@ export const ORG = 'Éthiqueia Québec inc.';
 
 export const publications: Publication[] = [
   {
+    id: 'desbiens2026forgelm4090cost',
+    slug: 'forgelm-4090-cost',
+    title: 'What it costs to train an LLM from scratch on one RTX 4090',
+    shortTitle: 'ForgeLM on one 4090',
+    authors: ['Yan Desbiens'],
+    date: '2026-06-29',
+    type: 'benchmark',
+    track: 'training',
+    version: 'v0.1.0',
+    repo: 'https://github.com/Linutesto/forgelm',
+    url: 'https://yandesbiens.com/blog/forgelm-4090-cost/',
+    artifacts: [
+      { label: 'Code + one-command repro', href: 'https://github.com/Linutesto/forgelm/tree/master/benchmarks/single-4090-cost' },
+      { label: 'Loss curve', href: '/img/forgelm-4090-cost/loss-curve.png' },
+    ],
+    abstract:
+      "A single consumer RTX 4090 (24 GB) pretrains ForgeLM's entire 30M-500M model family from scratch. We measure the real training envelope — VRAM, throughput, and tokens/day per config — with `forge plan` (real forward+backward+optimizer steps, torch.compile off as a conservative floor), and report the loss curve from an actual 120M run (cross-entropy 9.65 -> 2.78 over 9.04B tokens, ~20h wall-clock at a sustained 126k tok/s). The practical cost beats the spec sheet: the real run held 126k tok/s at 11.6 GB versus the planner's 84.5k tok/s at 15.8 GB, and VRAM is non-monotonic in parameters (250M fits in less than 120M because it runs a smaller micro-batch). Engineering numbers only — model-quality metrics (perplexity, HellaSwag, ARC) are left as honest 'run it' placeholders. The 24 GB ceiling is real: 500M at 20.4 GB OOMs against a live desktop session.",
+    doi: null,
+    reproducible: true,
+  },
+  {
     id: 'desbiens2026fmmrouter',
     slug: 'fmm-router',
     title:

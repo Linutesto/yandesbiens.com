@@ -1,0 +1,20 @@
+// → paste into the publications[] array in src/data/publications.ts
+{
+  id: 'desbiens2026forgelm4090cost',
+  slug: 'forgelm-4090-cost',
+  title: 'What it costs to train an LLM from scratch on one RTX 4090',
+  shortTitle: 'What it costs to train an LLM from scratch on one RTX 4090',
+  authors: ['Yan Desbiens'],
+  date: '2026-06-29',
+  type: 'benchmark',
+  track: 'training',
+  version: 'v0.1.0',
+  repo: 'https://github.com/Linutesto/TODO',
+  url: 'https://yandesbiens.com/blog/forgelm-4090-cost/',
+  artifacts: [
+    { label: 'Code + one-command repro', href: 'https://github.com/Linutesto/TODO' },
+  ],
+  abstract: 'TODO: 3-4 sentence abstract — claim, method, result, honest limitation.',
+  doi: null, // mint via Zenodo on release (see RELEASE_CHECKLIST.md), then fill
+  reproducible: true,
+},
