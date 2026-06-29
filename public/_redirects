@@ -2,3 +2,6 @@
 # Keep the old project URL alive permanently.
 /projects/hermes/   /projects/neuroarch/   301
 /projects/hermes    /projects/neuroarch/   301
+
+# Serve the legacy security.txt location too (canonical is /.well-known/).
+/security.txt   /.well-known/security.txt   301

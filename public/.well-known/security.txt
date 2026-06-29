@@ -1,0 +1,7 @@
+# Vulnerability disclosure — yandesbiens.com (Éthiqueia Québec inc.)
+# RFC 9116. Responsible disclosure welcome; please allow reasonable time to fix.
+
+Contact: mailto:yandesbiens420@gmail.com
+Expires: 2027-06-29T00:00:00.000Z
+Preferred-Languages: en, fr
+Canonical: https://yandesbiens.com/.well-known/security.txt
