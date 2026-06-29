@@ -99,10 +99,16 @@ stacked transformer blocks.
 
 - **Lineage:** byte_gpt → ForgeLM (live) → the 4090 capacity planner / autopilot.
   UFM (Thread 1) is the bridge that lets this thread scale past 24 GB.
-- **Lead artifact:** ForgeLM + a reproducible "train an LLM from scratch on one 4090" recipe.
-- **Maturity:** `shipped`, no public recipe doc.
-- **Evidence needed:** an end-to-end reproducible run with logged loss curves, tokens/sec,
-  and exact hardware/software versions.
+- **Lead artifact:** [`forgelm`](https://github.com/Linutesto/forgelm) + a reproducible
+  "train an LLM from scratch on one 4090" recipe.
+- **Maturity:** `benchmarked` ✅ — **proof drop (2026-06-29):**
+  [What it costs to train an LLM from scratch on one RTX 4090](https://yandesbiens.com/blog/forgelm-4090-cost/).
+  Measured training envelope (VRAM/throughput/tokens-day) for the full 30M–500M family on one
+  RTX 4090 (4/5 configs re-verified), plus a real 120M loss curve (9.65 → 2.78 over 9.04B tokens).
+  Honest finding: the real run beat the conservative planner (126k vs 84.5k tok/s, 11.6 vs 15.8 GB);
+  the 24 GB ceiling is documented (500M OOMs). One-command reproduce in `benchmarks/single-4090-cost/`.
+- **Next proof:** model-quality numbers from a full run — held-out perplexity + HellaSwag/ARC via
+  `forge eval` — to put a quality axis next to the cost axis.
 
 ## Thread 5 — Cognitive systems & world models
 

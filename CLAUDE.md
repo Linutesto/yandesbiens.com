@@ -49,6 +49,9 @@ scientific artifact with minimum friction. Read `RESEARCH_COMPILER.md` for the f
 
 `/` `/research` `/status` `/timeline` `/graph` `/cite` `/newsletter` `/resources` `/blog/*`
 `/projects/*`. RSS: `/rss.xml`, `/rss/benchmarks.xml`, `/rss/research.xml`, `/rss/newsletter.xml`.
+Agent/SEO surfaces: `/llms.txt` (generated from the data spine via `src/pages/llms.txt.ts`),
+`/.well-known/security.txt`, JSON-LD in `Base.astro` (Person+Org+WebSite graph) and per-post
+(`ScholarlyArticle` when a publication record exists, else `BlogPosting`).
 Server bits are Cloudflare Pages Functions in `functions/api/` (`chat.ts`, `subscribe.ts`) —
 NOT part of the Astro build.
 
