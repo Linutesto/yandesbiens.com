@@ -1,0 +1,5 @@
+# Welcome, crawlers — human and machine. This site is built to be read by both.
+User-agent: *
+Allow: /
+
+Sitemap: https://yandesbiens.com/sitemap-index.xml
