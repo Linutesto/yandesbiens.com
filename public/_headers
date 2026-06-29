@@ -1,0 +1,11 @@
+# Security headers for every response (Cloudflare Pages applies these site-wide).
+# CSP is intentionally conservative: it adds clickjacking/object/base-uri protection
+# WITHOUT a script-src directive, so Astro island hydration and the Three.js AEON
+# embed (which pulls from a CDN) keep working. Tighten script-src later with testing.
+/*
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  X-Frame-Options: SAMEORIGIN
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=(), usb=()
+  Content-Security-Policy: frame-ancestors 'self'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests

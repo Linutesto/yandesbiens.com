@@ -112,7 +112,7 @@ const {
         const data = await r.json().catch(() => ({ ok: false, error: 'network error' }));
         if (r.ok && data.ok) {
           msg.classList.add('ok');
-          msg.textContent = data.already ? '↳ already on the list. 🩷' : '↳ subscribed. proof drops incoming. 🩷';
+          msg.textContent = '↳ subscribed. proof drops incoming. 🩷';
           form.reset();
         } else {
           msg.classList.add('err'); msg.textContent = '↳ ' + (data.error || 'something broke. try again.');

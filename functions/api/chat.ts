@@ -25,6 +25,10 @@ type Msg = { role: 'user' | 'assistant' | 'system'; content: string };
 
 const LIMIT = 3;
 const BAN_TTL = 60 * 60 * 24 * 7; // 7 days, in seconds
+// Hard ceiling per source IP, independent of the (spoofable) client fingerprint.
+// Stops fingerprint-rotation from turning one IP into unlimited Workers AI calls.
+const IP_LIMIT = 12;
+const IP_TTL = 60 * 60 * 24; // 24 hours, in seconds
 const MODEL_DEFAULT = '@cf/meta/llama-3.3-70b-instruct-fp8-fast';
 const MAX_LEN = 1500;
 
@@ -79,10 +83,20 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   const key = `rl:${ip}:${fp}`;
 
   // ── enforce quota via KV ──────────────────────────────────
+  const ipKey = `iprl:${ip}`;
   let count = 0;
+  let ipCount = 0;
   if (env.CHAT_RL) {
-    count = Number((await env.CHAT_RL.get(key)) || '0');
+    [count, ipCount] = await Promise.all([
+      env.CHAT_RL.get(key).then((v) => Number(v || '0')),
+      env.CHAT_RL.get(ipKey).then((v) => Number(v || '0')),
+    ]);
+    // Friendly per-(IP + fingerprint) limit — the playful 3-then-ban UX.
     if (count >= LIMIT) {
+      return json({ error: pick(BAN_LINES), banned: true, remaining: 0 }, 429);
+    }
+    // Hard per-IP ceiling — a rotated/spoofed fingerprint can't dodge this.
+    if (ipCount >= IP_LIMIT) {
       return json({ error: pick(BAN_LINES), banned: true, remaining: 0 }, 429);
     }
   }
@@ -118,10 +132,13 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     return json({ error: '⚠ upstream error talking to workers ai.' }, 502);
   }
 
-  // ── commit the count only on a successful answer ─────────
+  // ── commit the counts only on a successful answer ────────
   if (env.CHAT_RL) {
     count += 1;
-    await env.CHAT_RL.put(key, String(count), { expirationTtl: BAN_TTL });
+    await Promise.all([
+      env.CHAT_RL.put(key, String(count), { expirationTtl: BAN_TTL }),
+      env.CHAT_RL.put(ipKey, String(ipCount + 1), { expirationTtl: IP_TTL }),
+    ]);
   }
   const remaining = Math.max(0, LIMIT - count);
 

@@ -69,5 +69,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   }
   await env.SUBSCRIBERS.put(rlKey, String(count + 1), { expirationTtl: RL_TTL });
 
-  return json({ ok: true, already: !!existing });
+  // Always return the same shape whether or not the email already existed —
+  // otherwise the response lets anyone probe who is on the list (enumeration).
+  return json({ ok: true });
 };
