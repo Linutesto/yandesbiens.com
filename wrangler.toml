@@ -12,6 +12,11 @@ id = "89fd1524cfb443e8b4efceac0c21999e"
 binding = "SUBSCRIBERS"
 id = "72cba153939c4120ab9979c1ece9037f"
 
+# Request-intelligence: flagged events + IP blocklist (lib/sentinel.ts)
+[[kv_namespaces]]
+binding = "SENTINEL"
+id = "d84f9740a30f48ceb738624e9a8930f6"
+
 # Non-secret runtime config. CF_AI_TOKEN is set separately as a Pages secret.
 [vars]
 CF_ACCOUNT_ID = "c114e3170dd7fbc2de75d9be1a3e7edd"

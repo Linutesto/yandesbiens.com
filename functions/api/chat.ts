@@ -14,8 +14,11 @@
 // Required binding:
 //   CHAT_RL        – a KV namespace
 
+import { clientIp, isBlocked, flag } from '../../lib/sentinel';
+
 interface Env {
   CHAT_RL?: KVNamespace;
+  SENTINEL?: KVNamespace;
   CF_ACCOUNT_ID: string;
   CF_AI_TOKEN: string;
   CF_MODEL?: string;
@@ -60,25 +63,45 @@ const json = (body: unknown, status = 200) =>
     headers: { 'content-type': 'application/json; charset=utf-8' },
   });
 
+// A believable fake answer for blocked callers — looks like the chat still
+// works, so they keep probing a dead end instead of learning they're walled.
+const DECOY_REPLY =
+  "hey! thanks for the message 🩷 yan reads everything here — for anything real, " +
+  "the contact link at the bottom is your best bet and he'll get back to you.";
+
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
+  const ip = clientIp(request);
+
+  // ── blocklist: serve a decoy, never reveal the wall ──────
+  if (await isBlocked(env.SENTINEL, ip)) {
+    return json({ reply: DECOY_REPLY, remaining: 2, banned: false });
+  }
+
   let payload: { messages?: Msg[]; fp?: string };
   try {
     payload = await request.json();
   } catch {
+    await flag(env.SENTINEL, { ip, endpoint: '/api/chat', reason: 'malformed-json' });
     return json({ error: 'bad request' }, 400);
   }
 
   const messages = Array.isArray(payload.messages) ? payload.messages : [];
   const last = messages[messages.length - 1];
   if (!last || last.role !== 'user' || !last.content?.trim()) {
+    await flag(env.SENTINEL, { ip, endpoint: '/api/chat', reason: 'bad-structure' });
     return json({ error: 'no message' }, 400);
   }
   if (last.content.length > MAX_LEN) {
+    await flag(env.SENTINEL, {
+      ip,
+      endpoint: '/api/chat',
+      reason: 'oversize-payload',
+      meta: { len: last.content.length },
+    });
     return json({ error: `keep it under ${MAX_LEN} chars 🙂` }, 400);
   }
 
   // identity = client hardware fingerprint + source IP
-  const ip = request.headers.get('CF-Connecting-IP') || 'noip';
   const fp = (payload.fp || 'nofp').replace(/[^a-f0-9]/gi, '').slice(0, 32);
   const key = `rl:${ip}:${fp}`;
 
@@ -96,7 +119,14 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       return json({ error: pick(BAN_LINES), banned: true, remaining: 0 }, 429);
     }
     // Hard per-IP ceiling — a rotated/spoofed fingerprint can't dodge this.
+    // Hitting it means someone is cycling fingerprints: flag it as abuse.
     if (ipCount >= IP_LIMIT) {
+      await flag(env.SENTINEL, {
+        ip,
+        endpoint: '/api/chat',
+        reason: 'ip-cap-exceeded',
+        meta: { ipCount, fp },
+      });
       return json({ error: pick(BAN_LINES), banned: true, remaining: 0 }, 429);
     }
   }

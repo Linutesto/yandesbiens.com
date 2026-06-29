@@ -9,8 +9,11 @@
 // Body: { email: string, src?: string, website?: string }   (website = honeypot)
 // Returns: { ok: true } | { ok: false, error: string }
 
+import { clientIp, isBlocked, flag } from '../../lib/sentinel';
+
 interface Env {
   SUBSCRIBERS?: KVNamespace;
+  SENTINEL?: KVNamespace;
 }
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -29,15 +32,24 @@ async function sha256(input: string): Promise<string> {
 }
 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
+  const ip = clientIp(request);
+
+  // Blocklisted callers get the normal success shape — never reveal the wall.
+  if (await isBlocked(env.SENTINEL, ip)) return json({ ok: true });
+
   let payload: { email?: string; src?: string; website?: string };
   try {
     payload = await request.json();
   } catch {
+    await flag(env.SENTINEL, { ip, endpoint: '/api/subscribe', reason: 'malformed-json' });
     return json({ ok: false, error: 'bad request' }, 400);
   }
 
-  // Honeypot: real users never fill this hidden field.
-  if (payload.website) return json({ ok: true }); // silently accept-and-drop bots
+  // Honeypot: real users never fill this hidden field — a fill is a clear bot.
+  if (payload.website) {
+    await flag(env.SENTINEL, { ip, endpoint: '/api/subscribe', reason: 'honeypot' });
+    return json({ ok: true }); // silently accept-and-drop bots
+  }
 
   const email = (payload.email || '').trim().toLowerCase();
   if (!email || email.length > 254 || !EMAIL_RE.test(email)) {
@@ -49,10 +61,10 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   }
 
   // Light abuse limit per IP (hashed, short-lived — not retained as identity).
-  const ip = request.headers.get('cf-connecting-ip') || '0.0.0.0';
   const rlKey = `rl:${await sha256(ip)}`;
   const count = parseInt((await env.SUBSCRIBERS.get(rlKey)) || '0', 10);
   if (count >= RL_LIMIT) {
+    await flag(env.SENTINEL, { ip, endpoint: '/api/subscribe', reason: 'signup-flood' });
     return json({ ok: false, error: 'too many signups, try later' }, 429);
   }
 
