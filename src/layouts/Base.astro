@@ -26,15 +26,39 @@ const {
 const canonical = new URL(Astro.url.pathname, SITE.url).href;
 const ogUrl = new URL(ogImage, SITE.url).href;
 
-// Default JSON-LD: the lab as an Organization founded by Yan.
+// Default JSON-LD: an entity graph so agents/search resolve the lab, the
+// person behind it, and the site as one linked set of entities.
 const orgLd = {
   '@context': 'https://schema.org',
-  '@type': 'Organization',
-  name: SITE.org,
-  alternateName: SITE.orgShort,
-  url: SITE.url,
-  founder: { '@type': 'Person', name: SITE.name },
-  description: SITE.description,
+  '@graph': [
+    {
+      '@type': 'Person',
+      '@id': `${SITE.url}/#person`,
+      name: SITE.name,
+      url: SITE.url,
+      jobTitle: 'Independent AI researcher',
+      sameAs: [SITE.github],
+      affiliation: { '@id': `${SITE.url}/#org` },
+    },
+    {
+      '@type': 'Organization',
+      '@id': `${SITE.url}/#org`,
+      name: SITE.org,
+      alternateName: SITE.orgShort,
+      url: SITE.url,
+      founder: { '@id': `${SITE.url}/#person` },
+      description: SITE.description,
+    },
+    {
+      '@type': 'WebSite',
+      '@id': `${SITE.url}/#website`,
+      url: SITE.url,
+      name: SITE.name,
+      description: SITE.description,
+      inLanguage: 'en',
+      publisher: { '@id': `${SITE.url}/#org` },
+    },
+  ],
 };
 ---
 <!doctype html>

@@ -20,18 +20,42 @@ const { Content } = await render(post);
 const track = post.data.track ? tracks[post.data.track] : null;
 const pub = getPublicationBySlug(post.id);
 
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'BlogPosting',
-  headline: post.data.title,
-  description: post.data.description,
-  datePublished: post.data.date.toISOString(),
-  author: { '@type': 'Person', name: SITE.name },
-  publisher: { '@type': 'Organization', name: SITE.org },
-  mainEntityOfPage: new URL(`/blog/${post.id}/`, SITE.url).href,
-  ...(post.data.ogImage ? { image: new URL(post.data.ogImage, SITE.url).href } : {}),
-  keywords: post.data.tags.join(', '),
-};
+const pageUrl = new URL(`/blog/${post.id}/`, SITE.url).href;
+const img = post.data.ogImage ? new URL(post.data.ogImage, SITE.url).href : undefined;
+// Posts backed by a publication record are citable research → ScholarlyArticle
+// (richer, agent/citation-friendly); everything else stays a BlogPosting.
+const jsonLd = pub
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'ScholarlyArticle',
+      headline: post.data.title,
+      name: pub.title,
+      description: post.data.description,
+      abstract: pub.abstract,
+      datePublished: post.data.date.toISOString(),
+      author: pub.authors.map((a) => ({ '@type': 'Person', name: a, url: SITE.url })),
+      publisher: { '@type': 'Organization', name: SITE.org },
+      mainEntityOfPage: pageUrl,
+      identifier: pub.id,
+      isAccessibleForFree: true,
+      ...(pub.version ? { version: pub.version } : {}),
+      ...(pub.repo ? { isBasedOn: pub.repo, codeRepository: pub.repo } : {}),
+      ...(pub.doi ? { sameAs: `https://doi.org/${pub.doi}` } : {}),
+      ...(img ? { image: img } : {}),
+      keywords: post.data.tags.join(', '),
+    }
+  : {
+      '@context': 'https://schema.org',
+      '@type': 'BlogPosting',
+      headline: post.data.title,
+      description: post.data.description,
+      datePublished: post.data.date.toISOString(),
+      author: { '@type': 'Person', name: SITE.name },
+      publisher: { '@type': 'Organization', name: SITE.org },
+      mainEntityOfPage: pageUrl,
+      ...(img ? { image: img } : {}),
+      keywords: post.data.tags.join(', '),
+    };
 ---
 <Base
   title={`${post.data.title} — yan desbiens`}
