@@ -164,6 +164,15 @@ export const timeline: Era[] = [
           { label: 'aeon ↗', href: 'https://github.com/Linutesto/aeon-living-worlds' },
         ],
       },
+      {
+        when: '2026-07',
+        title: 'agentos: from kernel to self-hosted agent platform',
+        track: 'agents',
+        status: 'shipped',
+        detail:
+          'The terminal-native kernel grew into a mobile-first agent platform: a ReAct loop over 120+ models, ~26 real tools, human-in-the-loop permissions with a filesystem scope, runtime tool-forging in a hardened node:vm sandbox, and an ~88-skill catalog with a live, environment-aware system prompt. Engineering rather than a benchmarked result — the forging sandbox and skill catalog are adapted from the open-source @framers/agentos (Apache-2.0).',
+        links: [{ label: 'agentos', href: '/projects/agentos/' }],
+      },
     ],
   },
 ];
