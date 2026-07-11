@@ -2,7 +2,6 @@
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import ProjectCard from '../components/ProjectCard.astro';
-import Chat from '../components/Chat.tsx';
 import Contact from '../components/Contact.astro';
 import Subscribe from '../components/Subscribe.astro';
 import { projects } from '../data/projects';
@@ -43,8 +42,8 @@ const posts = (await getCollection('blog'))
     </p>
     <p>
       Everything here is real and running: cognitive architectures, from-scratch LLMs,
-      procedural worlds, agent runtimes. If any of it makes you curious — the chat below
-      is happy to talk, and so am I.
+      procedural worlds, agent runtimes. If any of it makes you curious, reach out —
+      I'm happy to talk.
     </p>
     <p class="muted"># status: building something new basically every day. local-first, always.</p>
   </div>
@@ -99,12 +98,6 @@ const posts = (await getCollection('blog'))
       what i found → <a href="/blog/the-dig/">the dig — four years of a one-person AI lab</a>.
     </p>
   </div>
-
-  <!-- CHAT -->
-  <p class="prompt" id="chat">
-    <b>yan@yandesbiens</b>:<span class="path">~</span>$ <span class="cmd">./chat --talk-to-my-ai</span>
-  </p>
-  <Chat client:visible />
 
   <!-- BLOG TEASER -->
   <p class="prompt">

@@ -119,6 +119,28 @@ export const publications: Publication[] = [
     doi: null,
     reproducible: true,
   },
+  {
+    id: 'desbiens2026contextpaw',
+    slug: 'contextpaw-silent-truncation',
+    title: 'ContextPaw: making LLM context-window overflow honest and survivable',
+    shortTitle: 'ContextPaw',
+    authors: ['Yan Desbiens'],
+    date: '2026-07-11',
+    type: 'software',
+    track: 'agents',
+    version: 'v0.1.0',
+    repo: 'https://github.com/Linutesto/contextpaw',
+    url: 'https://yandesbiens.com/blog/contextpaw-silent-truncation/',
+    artifacts: [
+      { label: 'Code (MIT)', href: 'https://github.com/Linutesto/contextpaw' },
+      { label: 'pip install contextpaw', href: 'https://pypi.org/project/contextpaw/' },
+      { label: 'Reproduction scripts', href: 'https://github.com/Linutesto/contextpaw#the-proof' },
+    ],
+    abstract:
+      'On context-window overflow, Ollama silently discards the front of the prompt and returns 200 OK: given a 160,689-token prompt against a 32k window it evaluated 16,387 tokens, reported nothing, and the model confidently invented an answer to a question whose ground truth sat in the discarded head. llama.cpp instead returns a hard 400 exceed_context_size_error, which is honest but fatal to an agent turn. ContextPaw is an MIT-licensed proxy speaking both the Ollama and OpenAI APIs that makes overflow honest: it evicts middle-out (preserving the prompt-cache prefix and the system prompt that head-truncation destroys), reports every eviction in the body, the headers, and inline to the model, and recovers llama.cpp 400s by compacting and retrying. We further show that notifying the model of the eviction is insufficient: with three facts buried in the evicted region, a marker stating in plain language that the information was removed still yielded 0/3 recovered facts and three confabulated ones, while summarizing the evicted span with a 1B local model yielded 3/3. Telling an agent it lost information does not stop it hallucinating; the content must be returned.',
+    doi: null,
+    reproducible: true,
+  },
 ];
 
 export const getPublication = (id: string) => publications.find((p) => p.id === id);
