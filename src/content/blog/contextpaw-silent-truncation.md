@@ -16,9 +16,21 @@ tell me no.**
 This post is about the sharpest instance of that, and the tool I built to stop it:
 [ContextPaw](https://github.com/Linutesto/contextpaw) (`pip install contextpaw`).
 
+> **Correction (added shortly after publishing).** I originally wrote that I hadn't seen this
+> behaviour documented anywhere. That was wrong, and I'd rather say so than let it stand. It
+> has been reported to Ollama repeatedly:
+> [#3839](https://github.com/ollama/ollama/issues/3839) — *"Detect Truncation Due to Exceeding
+> Context Size"* — has been **open since April 2024**;
+> [#14259](https://github.com/ollama/ollama/issues/14259) — *"truncation happens silently with
+> no user-visible indication"* — since February 2026;
+> [#9208](https://github.com/ollama/ollama/issues/9208) asks for the same thing from the logging
+> side. What I could not find was anyone **measuring what it costs you** — so that is what the
+> rest of this post does. Two years of people asking to simply be *told*, and it still doesn't
+> tell you. That is the argument for a userspace fix, not against one.
+
 ---
 
-## The thing nobody told me
+## The thing that doesn't get logged
 
 Send Ollama a prompt that overflows the context window. Here is what happens.
 
