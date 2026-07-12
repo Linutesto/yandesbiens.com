@@ -141,6 +141,27 @@ export const publications: Publication[] = [
     doi: null,
     reproducible: true,
   },
+  {
+    id: 'desbiens2026ratchet',
+    slug: 'hermes-certainty-ratchet',
+    title:
+      'The certainty ratchet: what an autonomous cognitive loop converges to when nothing can prove it wrong',
+    shortTitle: 'Certainty ratchet',
+    authors: ['Yan Desbiens'],
+    date: '2026-07-11',
+    type: 'article',
+    track: 'cognition',
+    repo: 'https://github.com/Linutesto/hermes-neuroarch',
+    url: 'https://yandesbiens.com/blog/hermes-certainty-ratchet/',
+    artifacts: [
+      { label: 'Forensic report', href: 'https://yandesbiens.com/blog/hermes-certainty-ratchet/' },
+      { label: 'Figures', href: '/img/hermes/fig2_evidence.png' },
+    ],
+    abstract:
+      'We report a negative result from a long-running autonomous cognitive agent (Hermes/NeuroArch) whose idle reasoning loop executed 27,834 cycles over several months on local hardware. The system did not accumulate knowledge; it converged on unfalsifiable certainty. Belief revision reported an identical result in 300 of the last 300 cycles (606 strengthened, 0 contradictions, 0 merged, 0 decayed), leaving 207 beliefs at confidence >= 0.99. We identify the full mechanism. A monotonic strengthening rule selects on a historical evidence counter that is never re-evaluated; a staleness-based decay exists but never fires, because the evidence-writing path resets the same updated_at timestamp the decay reads, and additionally un-archives archived beliefs — so manufacturing evidence for a belief is what makes it immortal. Of 882,602 evidence rows, 0 are CONTRADICTING (the schema supports the type; it was never used) and the contradictions table is empty. Critically, the strengthening path writes confidence without emitting an audit event: the per-belief log records 5 reinforcements against roughly 16.9 million performed, so the system was blind precisely where it mattered. 31.3% of ratchet-eligible beliefs claim evidence that has zero corresponding rows. The self-generated fine-tuning corpus (923,789 examples in one shard) contains only 8,858 unique texts (0.96%), 13.3% empty, and is 85.4% self-referential. The failure is architectural rather than a defect, and requires the conjunction of four common design choices; removing any one stalls the ratchet. Practical recommendation: alarm when an autonomous system reports zero contradictions.',
+    doi: null,
+    reproducible: true,
+  },
 ];
 
 export const getPublication = (id: string) => publications.find((p) => p.id === id);
